@@ -84,7 +84,10 @@
                 <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                 
                     <div class="site-heading">
-                        <h1>Ruby&#39;s Blog</h1>
+						
+						<h1 style="color:black;">
+						
+						Ruby&#39;s Blog</h1>
                         <!--<hr class="small">-->
                         <span class="subheading"></span>
                     </div>
@@ -127,30 +130,30 @@
 
                     
 
-                        
+                    
                     
 
-                        
-                        <li>
-                            <a href="/about/">About</a>
-                        </li>
-                        
+                    
+                    <li>
+                        <a href="/about/">About me</a>
+                    </li>
+                    
                     
 
-                        
-                        <li>
-                            <a href="/archive/">Archives</a>
-                        </li>
-                        
+                    
+                    <li>
+                        <a href="/archive/">Archives</a>
+                    </li>
+                    
                     
 
-                        
-                        <li>
-                            <a href="/tags/">Tags</a>
-                        </li>
-                        
+                    
+                    <li>
+                        <a href="/tags/">Tags</a>
+                    </li>
                     
                     
+
                 </ul>
             </div>
         </div>
@@ -162,31 +165,30 @@
     // Drop Bootstarp low-performance Navbar
     // Use customize navbar with high-quality material design animation
     // in high-perf jank-free CSS3 implementation
-    var $body   = document.body;
+    var $body = document.body;
     var $toggle = document.querySelector('.navbar-toggle');
     var $navbar = document.querySelector('#huxblog_navbar');
     var $collapse = document.querySelector('.navbar-collapse');
 
     $toggle.addEventListener('click', handleMagic)
-    function handleMagic(e){
+    function handleMagic(e) {
         if ($navbar.className.indexOf('in') > 0) {
-        // CLOSE
+            // CLOSE
             $navbar.className = " ";
             // wait until animation end.
-            setTimeout(function(){
+            setTimeout(function () {
                 // prevent frequently toggle
-                if($navbar.className.indexOf('in') < 0) {
+                if ($navbar.className.indexOf('in') < 0) {
                     $collapse.style.height = "0px"
                 }
-            },400)
-        }else{
-        // OPEN
+            }, 400)
+        } else {
+            // OPEN
             $collapse.style.height = "auto"
             $navbar.className += " in";
         }
     }
 </script>
-
 
     <!-- Main Content -->
     <!-- Main Content -->
@@ -227,35 +229,26 @@
                   <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
                   </li> -->
                  <li >
-                    03-23
+                    03-28
                     <i class="fa fa-angle-double-right" aria-hidden="true"></i>
-                    <a href="/2020/03/23/實際走一趟NLP流程/" style="color: #0085a1">
+                    <a href="/2020/03/28/Hexo-自己的部落格自己架/" style="color: #0085a1">
                         <span>
-                            實際走一趟NLP流程
+                            [Hexo]自己的部落格自己架
                         </span>
                     </a>
                     <!-- <p class="post-meta">{{ post.date | date:"%Y-%m-%d" }}</p> -->
                 </li>
-                
-                </ul>
-            </div>
-            
-            <div class="one-tag-list">
-                <span class="fa fa-calendar-times-o listing-seperator" id="2017">
-                    <span class="tag-text">2017</span>
-                </span>
-                <ul>
                 
                   <!-- <li class="listing-item">
                   <time datetime="{{ post.date | date:"%Y-%m-%d" }}">{{ post.date | date:"%Y-%m-%d" }}</time>
                   <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
                   </li> -->
                  <li >
-                    03-18
+                    03-23
                     <i class="fa fa-angle-double-right" aria-hidden="true"></i>
-                    <a href="/2017/03/18/hexo-theme-beantech/" style="color: #0085a1">
+                    <a href="/2020/03/23/實際走一趟NLP流程/" style="color: #0085a1">
                         <span>
-                            [Hexo] Theme BeanTech
+                            實際走一趟NLP流程
                         </span>
                     </a>
                     <!-- <p class="post-meta">{{ post.date | date:"%Y-%m-%d" }}</p> -->
@@ -289,6 +282,8 @@
     <!-- no hr -->
     <h5><a href="/tags/">FEATURED TAGS</a></h5>
     <div class="tags">
+        
+            
         
             
         
@@ -364,11 +359,11 @@
     <ul>
       
         <li>
-          <a href="/2020/03/23/實際走一趟NLP流程/">實際走一趟NLP流程</a>
+          <a href="/2020/03/28/Hexo-自己的部落格自己架/">[Hexo]自己的部落格自己架</a>
         </li>
       
         <li>
-          <a href="/2017/03/18/hexo-theme-beantech/">[Hexo] Theme BeanTech</a>
+          <a href="/2020/03/23/實際走一趟NLP流程/">實際走一趟NLP流程</a>
         </li>
       
     </ul>
@@ -379,7 +374,7 @@
         
     <h5>ARCHIVES</h5>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">1</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">2</span></li></ul>
     </div>
 
         <hr>

@@ -84,7 +84,10 @@
                 <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                 
                     <div class="site-heading">
-                        <h1>Ruby&#39;s Blog</h1>
+						
+						<h1 style="color:black;">
+						
+						Ruby&#39;s Blog</h1>
                         <!--<hr class="small">-->
                         <span class="subheading"></span>
                     </div>
@@ -127,30 +130,30 @@
 
                     
 
-                        
+                    
                     
 
-                        
-                        <li>
-                            <a href="/about/">About</a>
-                        </li>
-                        
+                    
+                    <li>
+                        <a href="/about/">About me</a>
+                    </li>
+                    
                     
 
-                        
-                        <li>
-                            <a href="/archive/">Archives</a>
-                        </li>
-                        
+                    
+                    <li>
+                        <a href="/archive/">Archives</a>
+                    </li>
+                    
                     
 
-                        
-                        <li>
-                            <a href="/tags/">Tags</a>
-                        </li>
-                        
+                    
+                    <li>
+                        <a href="/tags/">Tags</a>
+                    </li>
                     
                     
+
                 </ul>
             </div>
         </div>
@@ -162,31 +165,30 @@
     // Drop Bootstarp low-performance Navbar
     // Use customize navbar with high-quality material design animation
     // in high-perf jank-free CSS3 implementation
-    var $body   = document.body;
+    var $body = document.body;
     var $toggle = document.querySelector('.navbar-toggle');
     var $navbar = document.querySelector('#huxblog_navbar');
     var $collapse = document.querySelector('.navbar-collapse');
 
     $toggle.addEventListener('click', handleMagic)
-    function handleMagic(e){
+    function handleMagic(e) {
         if ($navbar.className.indexOf('in') > 0) {
-        // CLOSE
+            // CLOSE
             $navbar.className = " ";
             // wait until animation end.
-            setTimeout(function(){
+            setTimeout(function () {
                 // prevent frequently toggle
-                if($navbar.className.indexOf('in') < 0) {
+                if ($navbar.className.indexOf('in') < 0) {
                     $collapse.style.height = "0px"
                 }
-            },400)
-        }else{
-        // OPEN
+            }, 400)
+        } else {
+            // OPEN
             $collapse.style.height = "auto"
             $navbar.className += " in";
         }
     }
 </script>
-
 
     <!-- Main Content -->
     <!-- Main Content -->
@@ -206,6 +208,36 @@
             
                 <!-- Main Content -->
 
+
+<div class="post-preview">
+
+    <a href="/2020/03/28/Hexo-自己的部落格自己架/">
+        <h2 class="post-title">
+            [Hexo]自己的部落格自己架
+        </h2>
+        <h3 class="post-subtitle">
+            
+        </h3>
+        <div class="post-content-preview">
+            常用指令
+12345678- 更新github    hexo clean &amp;&amp; hexo generate &amp;&amp; hexo d- run hexo sever    hexo s / hexo server- 清除hexo靜態檔案    hexo cl /  hexo clean- 產生hexo靜態檔案    hexo g / hexo generate
+H......
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by Ruby Zhao on
+            2020-03-28
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#Hexo" title="Hexo">Hexo</a>
+            
+        </div>
+    
+
+</div>
+<hr>
 
 <div class="post-preview">
 
@@ -233,44 +265,9 @@
         </p>
         <div class="tags">
             
-        </div>
-    
-
-</div>
-<hr>
-
-<div class="post-preview">
-
-    <a href="/2017/03/18/hexo-theme-beantech/">
-        <h2 class="post-title">
-            [Hexo] Theme BeanTech
-        </h2>
-        <h3 class="post-subtitle">
-            This is hexo theme Demo.
-        </h3>
-        <div class="post-content-preview">
+              <a href="/tags/#NLP" title="NLP">NLP</a>
             
-Ported Theme of Hux Blog, Thank Huxpro for designing such a flawless theme.
-This BeanTech theme created by YuHsuan modified from the original Porter Kaijun
-
-
-
-
-Usage
-
-I publish the whole project f......
-        </div>
-    </a>
-    
-        <p class="post-meta" style="margin: 10px 0;">
-            Posted by Ruby Zhao on
-            2017-03-18
-        </p>
-        <div class="tags">
-            
-              <a href="/tags/#Hexo" title="Hexo">Hexo</a>
-            
-              <a href="/tags/#Blog" title="Blog">Blog</a>
+              <a href="/tags/#LSTM" title="LSTM">LSTM</a>
             
         </div>
     
@@ -308,6 +305,8 @@ I publish the whole project f......
     <!-- no hr -->
     <h5><a href="/tags/">FEATURED TAGS</a></h5>
     <div class="tags">
+        
+            
         
             
         
@@ -383,11 +382,11 @@ I publish the whole project f......
     <ul>
       
         <li>
-          <a href="/2020/03/23/實際走一趟NLP流程/">實際走一趟NLP流程</a>
+          <a href="/2020/03/28/Hexo-自己的部落格自己架/">[Hexo]自己的部落格自己架</a>
         </li>
       
         <li>
-          <a href="/2017/03/18/hexo-theme-beantech/">[Hexo] Theme BeanTech</a>
+          <a href="/2020/03/23/實際走一趟NLP流程/">實際走一趟NLP流程</a>
         </li>
       
     </ul>
@@ -398,7 +397,7 @@ I publish the whole project f......
         
     <h5>ARCHIVES</h5>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">1</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">2</span></li></ul>
     </div>
 
         <hr>

@@ -7,22 +7,22 @@
     </url>
     
     <url>
-        <loc>http://rubyzhao_blog.nctu.me/tags/</loc>
-        <lastmod>2020-03-23T13:34:10.631Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
-    </url>
-    
-    <url>
         <loc>http://rubyzhao_blog.nctu.me/archive/</loc>
-        <lastmod>2020-03-23T13:34:10.563Z</lastmod>
+        <lastmod>2020-03-28T12:39:10.601Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     
     <url>
         <loc>http://rubyzhao_blog.nctu.me/about/</loc>
-        <lastmod>2020-03-23T13:34:10.562Z</lastmod>
+        <lastmod>2020-03-25T14:44:00.586Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>http://rubyzhao_blog.nctu.me/tags/</loc>
+        <lastmod>2020-03-25T14:28:54.627Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
