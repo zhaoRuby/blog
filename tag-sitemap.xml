@@ -2,22 +2,29 @@
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
     <url>
+        <loc>http://rubyzhao_blog.nctu.me/tags/Hexo/</loc>
+        <lastmod>2020-03-28T13:52:57.994Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://rubyzhao_blog.nctu.me/tags/%E6%9E%B6%E7%AB%99/</loc>
+        <lastmod>2020-03-28T13:52:57.994Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
         <loc>http://rubyzhao_blog.nctu.me/tags/NLP/</loc>
-        <lastmod>2020-03-25T13:12:14.919Z</lastmod>
+        <lastmod>2020-03-28T13:53:01.852Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
 
     <url>
         <loc>http://rubyzhao_blog.nctu.me/tags/LSTM/</loc>
-        <lastmod>2020-03-25T13:12:14.919Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>http://rubyzhao_blog.nctu.me/tags/Hexo/</loc>
-        <lastmod>2020-03-28T12:56:32.952Z</lastmod>
+        <lastmod>2020-03-28T13:53:01.852Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
