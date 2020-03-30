@@ -144,14 +144,14 @@
 
                     
                     <li>
-                        <a href="/about/">About me</a>
+                        <a href="/archive/">Archives</a>
                     </li>
                     
                     
 
                     
                     <li>
-                        <a href="/archive/">Archives</a>
+                        <a href="/about/">About me</a>
                     </li>
                     
                     
@@ -300,9 +300,10 @@ paris — france +germany = berlin.</li>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## pre-processing</span></span><br><span class="line"><span class="comment">## 簡單斷詞器:為了方便，單純用空格斷詞分tokens</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">simpleToken</span><span class="params">(corpus)</span>:</span></span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> corpus:</span><br><span class="line">        new_line=line.split(<span class="string">' '</span>)</span><br><span class="line">        lines.append(new_line)</span><br></pre></td></tr></table></figure>
 <pre><code>斷詞結果如下:
 ['This', 'is', 'our', 'place,', 'we', 'make', 'the', 'rules']
-</code></pre>
-<p>[‘This’, ‘is’, ‘our’, ‘place,’, ‘we’, ‘make’, ‘the’, ‘call’]</p>
-<pre><code>接著根據斷詞後的corpus建立global的Co-occurrence Matrix(共現矩陣)，依照window size範圍，紀錄term(word) to term(word)出現的頻率次數
+['This', 'is', 'our', 'place,', 'we', 'make', 'the', 'call']
+
+接著根據斷詞後的corpus建立global的Co-occurrence Matrix(共現矩陣)
+依照window size範圍，紀錄term(word) to term(word)出現的頻率次數
 </code></pre>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">corpus = Corpus() <span class="comment"># 初始化gloVe模型的語料庫</span></span><br><span class="line">corpus.fit(lines,window=<span class="number">1</span>) <span class="comment"># fit([2D array],[int])</span></span><br><span class="line"></span><br><span class="line">print(corpus.dictionary) <span class="comment"># 共現矩陣的行列對應名稱</span></span><br><span class="line">print(corpus.matrix.toarray()) <span class="comment"># 共現矩陣</span></span><br><span class="line"></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="string"> 參考網址:https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.coo_matrix.html</span></span><br><span class="line"><span class="string"> corpus data type: scipy.sparse.coo.coo_matrix</span></span><br><span class="line"><span class="string"> - corpus 參數</span></span><br><span class="line"><span class="string">    dictionary : 查看corpus dict排序與名稱</span></span><br><span class="line"><span class="string">    &#123;'This': 0, 'is': 1, 'our': 2, 'place,': 3, 'we': 4, 'make': 5,'the': 6, 'rules': 7, 'call': 8&#125;</span></span><br><span class="line"><span class="string"> - matrix : 顯示共現矩陣</span></span><br><span class="line"><span class="string">   [</span></span><br><span class="line"><span class="string">    [0. 2. 0. 0. 0. 0. 0. 0. 0.]</span></span><br><span class="line"><span class="string">    [0. 0. 2. 0. 0. 0. 0. 0. 0.]</span></span><br><span class="line"><span class="string">    [0. 0. 0. 2. 0. 0. 0. 0. 0.]</span></span><br><span class="line"><span class="string">    [0. 0. 0. 0. 2. 0. 0. 0. 0.]</span></span><br><span class="line"><span class="string">    [0. 0. 0. 0. 0. 2. 0. 0. 0.]</span></span><br><span class="line"><span class="string">    [0. 0. 0. 0. 0. 0. 2. 0. 0.]</span></span><br><span class="line"><span class="string">    [0. 0. 0. 0. 0. 0. 0. 1. 1.]</span></span><br><span class="line"><span class="string">    [0. 0. 0. 0. 0. 0. 0. 0. 0.]</span></span><br><span class="line"><span class="string">    [0. 0. 0. 0. 0. 0. 0. 0. 0.]</span></span><br><span class="line"><span class="string">   ]</span></span><br><span class="line"><span class="string">"""</span></span><br></pre></td></tr></table></figure>
 <p>經過計算後所形成的矩陣如下:<br>
