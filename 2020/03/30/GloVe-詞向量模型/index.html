@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content>
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          GloVe 詞向量模型 - Ruby&#39;s Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://rubyzhao_blog.nctu.me/2020/03/30/GloVe-詞向量模型/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('../../../../img/post_bg.jpg')
+            /*post*/
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#NLP" title="NLP">NLP</a>
+                            
+                              <a class="tag" href="/tags/#GloVe" title="GloVe">GloVe</a>
+                            
+                              <a class="tag" href="/tags/#Word Embedding" title="Word Embedding">Word Embedding</a>
+                            
+                        </div>
+                        <h1>GloVe 詞向量模型</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by Ruby Zhao on
+                            2020-03-30
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Ruby&#39;s Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                    
+                    
+
+                    
+                    <li>
+                        <a href="/about/">About me</a>
+                    </li>
+                    
+                    
+
+                    
+                    <li>
+                        <a href="/archive/">Archives</a>
+                    </li>
+                    
+                    
+
+                    
+                    <li>
+                        <a href="/tags/">Tags</a>
+                    </li>
+                    
+                    
+
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e) {
+        if ($navbar.className.indexOf('in') > 0) {
+            // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function () {
+                // prevent frequently toggle
+                if ($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            }, 400)
+        } else {
+            // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <p>原文 <a href="https://nlp.stanford.edu/projects/glove/" target="_blank" rel="noopener">https://nlp.stanford.edu/projects/glove/</a></p>
+<blockquote>
+<p>作者認為ratio of co-occurrence probalility可以用來作為詞向量的轉換依據<br>
+假設有wordi,wordj兩個字<br>
+作者認為可以透過第三方wordk的字來確認wordi與wordj彼此間的關係</p>
+</blockquote>
+<ul>
+<li>
+<p><strong>co-occurrence probalility定義:</strong><br>
+<img src="./g8acUpp.png" alt></p>
+<p>Pij =&gt; word i 出現且 word j 也出現的機率</p>
+</li>
+</ul>
+<blockquote>
+<p>而作者在論文中的範例假設 : wordi=ice，wordj=steam<br>
+<img src="./xGO5PHq.png" alt></p>
+</blockquote>
+<p>若word k選擇solid，Pik/Pjk 會非常大<br>
+若word k選擇gas，Pik/Pjk 會非常小<br>
+word k 選擇water or fashion，Pik/Pjk會接近1</p>
+<blockquote>
+<p>因此作者假設了一個函數，代表wi與wj之間的關係可以透過wk這個第三方word來表示他們兩個之間的關係，其關係的數值為右邊的Pik/Pjk</p>
+</blockquote>
+<p><img src="./ZcU9A0l.png" alt></p>
+<p>上面的假設函數再經過一連串的推導公式後，如下圖:<br>
+<img src="./sIrrbKt.png" alt><br>
+前面兩個w是最終我們希望求得的詞向量<br>
+兩個b代表兩個詞向量的bias<br>
+w,b會在式子中不斷的被更新</p>
+<ul>
+<li>符號說明:<br>
+X : 共現矩陣<br>
+Xij : 表示wordi在wordk周圍(window size)的出現次數<br>
+Xi : wordi在每個字詞出現的總次數<br>
+Pij: P(j|i) = Xij / Xi  wordi出現的情況下wordj也出現的機率</li>
+</ul>
+<p><strong>f(Xij) 權重函數</strong></p>
+<ul>
+<li>作者表示，每個詞乘上的權重，根據一起出現的頻率應該要有所不同，例如Wordi跟wordj彼此共現的次數為0那麼f(0)=0才合理，因為他們之間根本沒有關係。</li>
+<li>權重函數應該是一個非遞減函數(non-decreasing function)，因為彼此的共現頻率越大，那就代表兩個字之間的關係應該會越相關。</li>
+</ul>
+<p>但有可能某個字的頻率過大，權重過大影響整個計算，因此做了權重的限制，如下圖，word的頻率高過/低過某個threshold後，權重值就會趨緩。</p>
+<p><img src="./SVjhD9z.png" alt></p>
+<p>經過作者實驗後，他發現權重參數的設定為以下，可以得到不錯的效果<br>
+<img src="./qY8gjyG.png" alt></p>
+<p>最後，我們只要求得左側的loss value值最小，就可以得到最佳化的詞向量<br>
+<img src="./yjQQUzt.png" alt></p>
+<h2><span id="glove特徵">GloVe特徵</span></h2>
+<ul>
+<li>unsupervised learning algorithm</li>
+<li>word-word co-occurences -&gt; term to term relevance</li>
+<li>cosine similarity(餘弦定理，算夾角theta) 找尋word vector的相似度(degree of similarity)</li>
+</ul>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">算出來的數值越接近<span class="number">1</span>表示兩個詞向量相似度越高，反之為<span class="number">0</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>orientation 向量有方向性</li>
+<li>Word analogies 透過向量計算，可以獲得以下的神奇結果:<br>
+king — man+ woman= queen.<br>
+paris — france +germany = berlin.</li>
+<li>計算速度快</li>
+<li>有使用到統計的特性</li>
+<li>資料量小 適用</li>
+</ul>
+<h2><span id="glove-將corpus轉成glove詞向量">GloVe- 將corpus轉成gloVe詞向量</span></h2>
+<blockquote>
+<p>python_gloVe github <a href="https://github.com/maciejkula/glove-python" target="_blank" rel="noopener">https://github.com/maciejkula/glove-python</a></p>
+</blockquote>
+<ul>
+<li>
+<p>安裝glove_python</p>
+  <figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip <span class="keyword">install</span> glove_python</span><br></pre></td></tr></table></figure>
+  <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#匯入以下Library</span></span><br><span class="line"><span class="keyword">from</span> glove <span class="keyword">import</span> Corpus, Glove</span><br><span class="line"><span class="keyword">from</span> sklearn.feature_extraction.text <span class="keyword">import</span> CountVectorizer</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>code 實作公式 (在glove_python-&gt;glove-&gt;glove_cython.pyx)，公式對照程式<br>
+<img src="./CDSEdq7.png" alt></p>
+</li>
+<li>
+<p>範例:<br>
+假設corpus</p>
+</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 句子來源:taylor swift - Lover 歌詞</span></span><br><span class="line">corpus= [</span><br><span class="line"><span class="string">'This is our place, we make the rules'</span>,</span><br><span class="line"><span class="string">'This is our place, we make the call'</span> ]</span><br><span class="line"><span class="comment">#window size = 1</span></span><br></pre></td></tr></table></figure>
+<p>首先須進行前處理，將句子做斷詞，這邊為了方便，單純用空格處理斷詞</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## pre-processing</span></span><br><span class="line"><span class="comment">## 簡單斷詞器:為了方便，單純用空格斷詞分tokens</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">simpleToken</span><span class="params">(corpus)</span>:</span></span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> corpus:</span><br><span class="line">        new_line=line.split(<span class="string">' '</span>)</span><br><span class="line">        lines.append(new_line)</span><br></pre></td></tr></table></figure>
+<pre><code>斷詞結果如下:
+['This', 'is', 'our', 'place,', 'we', 'make', 'the', 'rules']
+</code></pre>
+<p>[‘This’, ‘is’, ‘our’, ‘place,’, ‘we’, ‘make’, ‘the’, ‘call’]</p>
+<pre><code>接著根據斷詞後的corpus建立global的Co-occurrence Matrix(共現矩陣)，依照window size範圍，紀錄term(word) to term(word)出現的頻率次數
+</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">corpus = Corpus() <span class="comment"># 初始化gloVe模型的語料庫</span></span><br><span class="line">corpus.fit(lines,window=<span class="number">1</span>) <span class="comment"># fit([2D array],[int])</span></span><br><span class="line"></span><br><span class="line">print(corpus.dictionary) <span class="comment"># 共現矩陣的行列對應名稱</span></span><br><span class="line">print(corpus.matrix.toarray()) <span class="comment"># 共現矩陣</span></span><br><span class="line"></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="string"> 參考網址:https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.coo_matrix.html</span></span><br><span class="line"><span class="string"> corpus data type: scipy.sparse.coo.coo_matrix</span></span><br><span class="line"><span class="string"> - corpus 參數</span></span><br><span class="line"><span class="string">    dictionary : 查看corpus dict排序與名稱</span></span><br><span class="line"><span class="string">    &#123;'This': 0, 'is': 1, 'our': 2, 'place,': 3, 'we': 4, 'make': 5,'the': 6, 'rules': 7, 'call': 8&#125;</span></span><br><span class="line"><span class="string"> - matrix : 顯示共現矩陣</span></span><br><span class="line"><span class="string">   [</span></span><br><span class="line"><span class="string">    [0. 2. 0. 0. 0. 0. 0. 0. 0.]</span></span><br><span class="line"><span class="string">    [0. 0. 2. 0. 0. 0. 0. 0. 0.]</span></span><br><span class="line"><span class="string">    [0. 0. 0. 2. 0. 0. 0. 0. 0.]</span></span><br><span class="line"><span class="string">    [0. 0. 0. 0. 2. 0. 0. 0. 0.]</span></span><br><span class="line"><span class="string">    [0. 0. 0. 0. 0. 2. 0. 0. 0.]</span></span><br><span class="line"><span class="string">    [0. 0. 0. 0. 0. 0. 2. 0. 0.]</span></span><br><span class="line"><span class="string">    [0. 0. 0. 0. 0. 0. 0. 1. 1.]</span></span><br><span class="line"><span class="string">    [0. 0. 0. 0. 0. 0. 0. 0. 0.]</span></span><br><span class="line"><span class="string">    [0. 0. 0. 0. 0. 0. 0. 0. 0.]</span></span><br><span class="line"><span class="string">   ]</span></span><br><span class="line"><span class="string">"""</span></span><br></pre></td></tr></table></figure>
+<p>經過計算後所形成的矩陣如下:<br>
+<img src="./GUxe7Uh.png" alt></p>
+<p>矩陣行列對應字典順序<br>
+<img src="./a8EuWb8.png" alt></p>
+<p>將資料帶入gloVe模型，設定參數，即可獲得每個word的詞向量</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## gloVe model trainning</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="string">- GloVe 參數</span></span><br><span class="line"><span class="string">    no_components: 最後產出詞向量的維度</span></span><br><span class="line"><span class="string">    learning_rate: 學習率 (gloVe使用gradient descent最佳化參數)</span></span><br><span class="line"><span class="string">    rate越低耗費時間越久，但能獲得最小誤差值(通常?)</span></span><br><span class="line"><span class="string">- gloVe.fit 參數</span></span><br><span class="line"><span class="string">    epochs:重複跑幾次</span></span><br><span class="line"><span class="string">    no_threads: 要用幾個thread跑</span></span><br><span class="line"><span class="string">    word_vectors:詞向量結果</span></span><br><span class="line"><span class="string">    gloveModel.word_vectors[glove.dictionary['our']] 查某個word的詞向量</span></span><br><span class="line"><span class="string">    most_similar([word in dictionary],[num 顯示前幾名相似詞])</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line">gloveModel = Glove(no_components=<span class="number">3</span>, learning_rate=<span class="number">0.05</span>)</span><br><span class="line">gloveModel.fit(corpus.matrix, epochs=<span class="number">100</span>, no_threads=<span class="number">4</span>, verbose=<span class="literal">True</span>)</span><br><span class="line"><span class="comment"># gloVe只有詞向量的紀錄，沒有對應的字典集，預設:None</span></span><br><span class="line">gloveModel.add_dictionary(corpus.dictionary)</span><br><span class="line"><span class="comment">#print (glove.word_vectors[glove.dictionary['our']])</span></span><br><span class="line">print(gloveModel.most_similar(<span class="string">'is'</span>,<span class="number">1</span>)) <span class="comment"># n-1</span></span><br><span class="line"><span class="comment"># most_similar 參數num修正(若發現設定1回傳0個的時候，參考以下網址修改code)</span></span><br><span class="line"><span class="comment"># https://github.com/maciejkula/glove-python/pull/67/files</span></span><br><span class="line"><span class="comment"># return word and cosine similarity value</span></span><br><span class="line"><span class="comment"># cosine similarity : 判斷關係是否相似，數值介於-1~1之間</span></span><br><span class="line"><span class="comment"># 判斷方式:</span></span><br><span class="line"><span class="comment"># 越接近1代表越相似(自己的cosine similarity=1)</span></span><br><span class="line"><span class="comment"># https://www.machinelearningplus.com/nlp/cosine-similarity/</span></span><br><span class="line">print(gloveModel.word_vectors)</span><br></pre></td></tr></table></figure>
+<h3><span id="result">Result:</span></h3>
+<p><img src="./fcIQqWL.png" alt></p>
+<h2><span id="視覺化glove詞向量corpus與上面的例子不同">視覺化gloVe詞向量(corpus與上面的例子不同)</span></h2>
+<ul>
+<li>gloVe詞向量範例來源:gloVe的官網</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">##GloVe demo</span></span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">from</span> scipy <span class="keyword">import</span> spatial</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">from</span> sklearn.manifold <span class="keyword">import</span> TSNE</span><br><span class="line"></span><br><span class="line">embeddings_dict = &#123;&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">embeddings_dict = &#123;&#125;</span><br><span class="line"><span class="keyword">with</span> open(<span class="string">"C:/AI/GloVe/glove.6B/glove.6B.50d.txt"</span>, <span class="string">'r'</span>,encoding=<span class="string">"utf-8"</span>) <span class="keyword">as</span> f:</span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> f:</span><br><span class="line">        values = line.split()</span><br><span class="line">        word = values[<span class="number">0</span>]</span><br><span class="line">        vector = np.asarray(values[<span class="number">1</span>:], <span class="string">"float32"</span>)</span><br><span class="line">        embeddings_dict[word] = vector</span><br><span class="line"></span><br><span class="line"><span class="comment"># 與其他word vector算距離並按照近-遠排序</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">find_closest_embeddings</span><span class="params">(embedding)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> sorted(embeddings_dict.keys(), key=<span class="keyword">lambda</span> word: spatial.distance.euclidean(embeddings_dict[word], embedding))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#print(find_closest_embeddings(embeddings_dict["programmer"])[1:6])</span></span><br><span class="line"><span class="comment">#result: ['prodigy', 'hacker', 'programmers', 'innovator', 'introduces']</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">## 資訊視覺化  降維</span></span><br><span class="line">tsne = TSNE(n_components=<span class="number">2</span>, random_state=<span class="number">0</span>)</span><br><span class="line">words =  list(embeddings_dict.keys())</span><br><span class="line">vectors = [embeddings_dict[word] <span class="keyword">for</span> word <span class="keyword">in</span> words]</span><br><span class="line">Y = tsne.fit_transform(vectors[<span class="number">1000</span>:<span class="number">1800</span>])</span><br><span class="line">plt.scatter(Y[:, <span class="number">0</span>], Y[:, <span class="number">1</span>])</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> label, x, y <span class="keyword">in</span> zip(words, Y[:, <span class="number">0</span>], Y[:, <span class="number">1</span>]):</span><br><span class="line">    plt.annotate(label, xy=(x, y), xytext=(<span class="number">0</span>, <span class="number">0</span>), textcoords=<span class="string">"offset points"</span>)</span><br><span class="line"></span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<h3><span id="code-result">Code Result :</span></h3>
+<p>降維視覺化<br>
+use t-SHE class(in sklearn library) to visualize all of word vectors<br>
+<img src="./2wxyQNB.png" alt></p>
+<h2><span id="glove-問題">GloVe 問題</span></h2>
+<ul>
+<li>problem:</li>
+</ul>
+<blockquote>
+<p><a href="https://arxiv.org/abs/1607.06520" target="_blank" rel="noopener">“Man is to Computer Programmer as Woman is to Homemaker?</a></p>
+</blockquote>
+<p>在上面的文提到，gloVe產生出的結果，會顯示出社會上會有的偏見、歧視用語，例如:</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">man:</span>programmer = <span class="string">female:</span>homemaker</span><br></pre></td></tr></table></figure>
+<p>The embedding model will see programmer closer with male than female because of our own social perception we have of this job which is reflected in the language we use.</p>
+<h2><span id="reference">Reference</span></h2>
+<blockquote>
+<p><a href="https://www.youtube.com/watch?v=5Z6FjC6aWv8" target="_blank" rel="noopener">ADL Lecture 5.6: GloVe 詞向量 (20/03/31)</a><br>
+<a href="https://towardsdatascience.com/understanding-feature-engineering-part-4-deep-learning-methods-for-text-data-96c44370bbfa" target="_blank" rel="noopener">A hands-on intuitive approach to Deep Learning Methods for Text Data — Word2Vec, GloVe and FastText</a><br>
+<a href="https://medium.com/@bruceyanghy/nlp-and-deep-learning-all-in-one-part-ii-word2vec-glove-and-fasttext-184bd03a7ba" target="_blank" rel="noopener">NLP and Deep Learning All-in-One Part II: Word2vec, GloVe, and fastText</a><br>
+<a href="https://medium.com/analytics-vidhya/basics-of-using-pre-trained-glove-vectors-in-python-d38905f356db" target="_blank" rel="noopener">Basics of Using Pre-trained GloVe Vectors in Python</a><br>
+<a href="https://zhuanlan.zhihu.com/p/50946044" target="_blank" rel="noopener">GloVe算法原理及简单使用</a></p>
+</blockquote>
+
+
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                    
+                    <li class="next">
+                        <a href="/2020/03/23/實際走一趟NLP流程/" data-toggle="tooltip" data-placement="top"
+                            title="實際走一趟NLP流程">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+            </div>
+
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">GloVe特徵</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">GloVe- 將corpus轉成gloVe詞向量</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text">Result:</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">視覺化gloVe詞向量(corpus與上面的例子不同)</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.1.</span> <span class="toc-nav-text">Code Result :</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">GloVe 問題</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">Reference</span></a></li></ol>
+        
+        </div>
+      </aside>
+    
+
+
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#NLP"
+                            title="NLP">NLP</a>
+                        
+                        <a class="tag" href="/tags/#GloVe"
+                            title="GloVe">GloVe</a>
+                        
+                        <a class="tag" href="/tags/#Word Embedding"
+                            title="Word Embedding">Word Embedding</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js", function () {
+        anchors.options = {
+            visible: 'hover',
+            placement: 'left',
+            icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link {
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top: -0.1em;
+        }
+    }
+</style>
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank" href="https://www.facebook.com/enxiang.zhao">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/zhaoRuby">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://www.linkedin.com/in/enxiang-zhao-9a6695164">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Ruby Zhao 2020 
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    re-Ported by <a href="http://beantech.org">BeanTech</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=YenYuHsuan&repo=hexo-theme-beantech&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://rubyzhao_blog.nctu.me/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-XXXXXXXX-X';
+    var _gaDomain = 'http://rubyzhao_blog.nctu.me/';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://rubyzhao_blog.nctu.me/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

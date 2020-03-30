@@ -16,15 +16,29 @@
     </url>
 
     <url>
-        <loc>http://rubyzhao_blog.nctu.me/tags/NLP/</loc>
+        <loc>http://rubyzhao_blog.nctu.me/tags/LSTM/</loc>
         <lastmod>2020-03-28T13:53:01.852Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
 
     <url>
-        <loc>http://rubyzhao_blog.nctu.me/tags/LSTM/</loc>
-        <lastmod>2020-03-28T13:53:01.852Z</lastmod>
+        <loc>http://rubyzhao_blog.nctu.me/tags/NLP/</loc>
+        <lastmod>2020-03-30T14:51:07.206Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://rubyzhao_blog.nctu.me/tags/GloVe/</loc>
+        <lastmod>2020-03-30T14:51:07.206Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://rubyzhao_blog.nctu.me/tags/Word-Embedding/</loc>
+        <lastmod>2020-03-30T14:51:07.206Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
