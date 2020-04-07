@@ -135,14 +135,14 @@
 
                     
                     <li>
-                        <a href="/archive/">Archives</a>
+                        <a href="/about/">About me</a>
                     </li>
                     
                     
 
                     
                     <li>
-                        <a href="/about/">About me</a>
+                        <a href="/archive/">Archives</a>
                     </li>
                     
                     
@@ -208,6 +208,45 @@
             
                 <!-- Main Content -->
 
+
+<div class="post-preview">
+
+    <a href="/2020/04/07/Teacher-forcing/">
+        <h2 class="post-title">
+            Teacher forcing
+        </h2>
+        <h3 class="post-subtitle">
+            訓練模型的方法
+        </h3>
+        <div class="post-content-preview">
+            說明
+teacher forcing 就是當模型預測錯誤時，告訴他正確的答案
+就像學校的老師指正學生的錯誤一樣
+用來訓練RNN的方法，能有效、快速收斂模型，減少模型偏離的狀況
+Example
+假設我們希望有一個模型，輸入下面的句子後，模型能夠預測出相同順序的句子
+1This is our place
+首先我們必須先將上面的句子增加兩個標記，讓模型知道要開始預測以及什麼時候結束預測
+
+ : s......
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by Ruby Zhao on
+            2020-04-07
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#machine learning" title="machine learning">machine learning</a>
+            
+              <a href="/tags/#NLP" title="NLP">NLP</a>
+            
+        </div>
+    
+
+</div>
+<hr>
 
 <div class="post-preview">
 
@@ -355,7 +394,9 @@ Pij =&gt;......
             
         
             
-            <a href="/tags/#NLP" title="NLP" rel="2">NLP</a>
+        
+            
+            <a href="/tags/#NLP" title="NLP" rel="3">NLP</a>
             
         
             
@@ -434,6 +475,10 @@ Pij =&gt;......
     <ul>
       
         <li>
+          <a href="/2020/04/07/Teacher-forcing/">Teacher forcing</a>
+        </li>
+      
+        <li>
           <a href="/2020/03/30/GloVe-詞向量模型/">GloVe 詞向量模型</a>
         </li>
       
@@ -453,7 +498,7 @@ Pij =&gt;......
         
     <h5>ARCHIVES</h5>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">3</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">3</span></li></ul>
     </div>
 
         <hr>

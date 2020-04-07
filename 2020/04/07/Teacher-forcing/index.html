@@ -14,11 +14,11 @@
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <title>
         
-          Ruby&#39;s Blog
+          Teacher forcing - Ruby&#39;s Blog
         
     </title>
 
-    <link rel="canonical" href="http://rubyzhao_blog.nctu.me/404.html">
+    <link rel="canonical" href="http://rubyzhao_blog.nctu.me/2020/04/07/Teacher-forcing/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -69,8 +69,8 @@
 <style type="text/css">
     header.intro-header{
         
-            background-image: url('/img/404-bg.jpg')
-            /*page*/
+            background-image: url('../../../../img/post_bg.jpg')
+            /*post*/
         
     }
     
@@ -83,13 +83,20 @@
             <div class="row">
                 <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                 
-                    <div class="site-heading">
-						
-						<h1 style="color:black;">
-						
-						Ruby&#39;s Blog</h1>
-                        <!--<hr class="small">-->
-                        <span class="subheading">你来到了没有知识的荒原 :(</span>
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#machine learning" title="machine learning">machine learning</a>
+                            
+                              <a class="tag" href="/tags/#NLP" title="NLP">NLP</a>
+                            
+                        </div>
+                        <h1>Teacher forcing</h1>
+                        <h2 class="subheading">訓練模型的方法</h2>
+                        <span class="meta">
+                            Posted by Ruby Zhao on
+                            2020-04-07
+                        </span>
                     </div>
                 
 
@@ -191,25 +198,166 @@
 </script>
 
     <!-- Main Content -->
-    
-<!-- Page Header -->
-<header class="intro-header" style="background-image: url('/img/404-bg.jpg')">
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
     <div class="container">
         <div class="row">
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 ">
-                <div class="site-heading">
-                    <h1>404</h1>
-                    <!--<hr class="small">-->
-                    <span class="subheading">你来到了没有知识的荒原 :(</span>
-                </div>
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h2><span id="說明">說明</span></h2>
+<p><strong>teacher forcing 就是當模型預測錯誤時，告訴他正確的答案</strong><br>
+就像學校的老師指正學生的錯誤一樣<br>
+用來訓練RNN的方法，能有效、快速收斂模型，減少模型偏離的狀況</p>
+<h2><span id="example">Example</span></h2>
+<p>假設我們希望有一個模型，輸入下面的句子後，模型能夠預測出相同順序的句子</p>
+<figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">This <span class="keyword">is</span> our place</span><br></pre></td></tr></table></figure>
+<p>首先我們必須先將上面的句子增加兩個標記，讓模型知道要開始預測以及什麼時候結束預測</p>
+<ol>
+<li><sos> : start of sentence</sos></li>
+<li><eos> : end of sentence</eos></li>
+</ol>
+<p>變成這樣</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">&lt;SOS&gt;</span>This <span class="keyword">is</span> our place<span class="symbol">&lt;EOS&gt;</span></span><br></pre></td></tr></table></figure>
+<p>接著我們將<sos>餵入模型中，讓模型產生下一個word是什麼<br>
+假設模型預測出來的結果是 b ，與我們期望的值不同<br>
+若這個時間點(t0)不告訴模型這個預測值是錯誤的，任由模型繼續用錯誤的答案去預測下一個word，模型可能就會越偏離我們所希望的正確答案</sos></p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">input value  |  output value | ground truth |  time</span><br><span class="line">  &lt;SOS&gt;              b             This         t0</span><br><span class="line">    b            ? maybe R          is          t1</span><br></pre></td></tr></table></figure>
+<p>或許可以經由長時間的訓練，讓模型慢慢學習預測到正確的句子<br>
+但這種單純靠機器自己學習修正的方式，可能會耗費太多的訓練時間，模型的不穩定性也會較高</p>
+<p><strong>模型預測值偏離的嚴重性</strong><br>
+從女友偏離到波爾XD  一步錯步步錯<br>
+<img src="./t0HrLMS.png" alt></p>
+<p>為了避免模型偏離的狀況，就有了Teacher forcing的策略產生<br>
+如同老師糾正學生錯誤的答案一樣，我們可以將模型預測出的結果捨去不用，改成實際的正確答案讓模型繼續進行下一句的預測</p>
+<p>根據Teacher forcing的方法，可以將上面的例子改成<br>
+將b這個錯誤預測值捨去不用，告訴模型正確答案，模型就可以迅速的收斂，容易預測出正確的資料</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">input value  |  output value | ground truth  |   time</span><br><span class="line">  &lt;SOS&gt;              b             This           t0</span><br><span class="line">  This               ?              is            t1</span><br></pre></td></tr></table></figure>
+<h2><span id="reference">Reference</span></h2>
+<blockquote>
+<ul>
+<li><a href="https://machinelearningmastery.com/teacher-forcing-for-recurrent-neural-networks/" target="_blank" rel="noopener">What is Teacher Forcing for Recurrent Neural Networks?</a></li>
+<li><a href="http://zake7749.github.io/2017/09/28/Sequence-to-Sequence-tutorial/" target="_blank" rel="noopener">從零開始的 Sequence to Sequence</a></li>
+</ul>
+</blockquote>
+
+
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                    
+                    <li class="next">
+                        <a href="/2020/03/30/GloVe-詞向量模型/" data-toggle="tooltip" data-placement="top"
+                            title="GloVe 詞向量模型">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+            </div>
+
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">說明</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">Example</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">Reference</span></a></li></ol>
+        
+        </div>
+      </aside>
+    
+
+
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#machine learning"
+                            title="machine learning">machine learning</a>
+                        
+                        <a class="tag" href="/tags/#NLP"
+                            title="NLP">NLP</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
             </div>
         </div>
     </div>
-</header>
+</article>
 
+
+
+
+
+
+
+<!-- async load function -->
 <script>
-    document.body.classList.add('page-fullscreen');
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
 </script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js", function () {
+        anchors.options = {
+            visible: 'hover',
+            placement: 'left',
+            icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link {
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top: -0.1em;
+        }
+    }
+</style>
 
 
     <!-- Footer -->
