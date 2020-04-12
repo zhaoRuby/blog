@@ -37,13 +37,6 @@
     </url>
 
     <url>
-        <loc>http://rubyzhao_blog.nctu.me/tags/NLP/</loc>
-        <lastmod>2020-04-07T14:24:32.704Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
         <loc>http://rubyzhao_blog.nctu.me/tags/machine-learning/</loc>
         <lastmod>2020-04-07T14:24:32.704Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -52,7 +45,28 @@
 
     <url>
         <loc>http://rubyzhao_blog.nctu.me/tags/Math/</loc>
-        <lastmod>2020-04-12T06:27:25.692Z</lastmod>
+        <lastmod>2020-04-12T06:29:07.824Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://rubyzhao_blog.nctu.me/tags/NLP/</loc>
+        <lastmod>2020-04-12T06:36:39.753Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://rubyzhao_blog.nctu.me/tags/RASA/</loc>
+        <lastmod>2020-04-12T06:36:39.753Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://rubyzhao_blog.nctu.me/tags/chatbot/</loc>
+        <lastmod>2020-04-12T06:36:39.753Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>

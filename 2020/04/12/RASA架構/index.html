@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content>
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          RASA架構 - Ruby&#39;s Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://rubyzhao_blog.nctu.me/2020/04/12/RASA架構/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('../../../../img/post_bg.jpg')
+            /*post*/
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#NLP" title="NLP">NLP</a>
+                            
+                              <a class="tag" href="/tags/#RASA" title="RASA">RASA</a>
+                            
+                              <a class="tag" href="/tags/#chatbot" title="chatbot">chatbot</a>
+                            
+                        </div>
+                        <h1>RASA架構</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by Ruby Zhao on
+                            2020-04-12
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Ruby&#39;s Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                    
+                    
+
+                    
+                    <li>
+                        <a href="/about/">About me</a>
+                    </li>
+                    
+                    
+
+                    
+                    <li>
+                        <a href="/archive/">Archives</a>
+                    </li>
+                    
+                    
+
+                    
+                    <li>
+                        <a href="/tags/">Tags</a>
+                    </li>
+                    
+                    
+
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e) {
+        if ($navbar.className.indexOf('in') > 0) {
+            // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function () {
+                // prevent frequently toggle
+                if ($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            }, 400)
+        } else {
+            // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h2><span id="常用指令">常用指令</span></h2>
+<ul>
+<li>新建RASA專案</li>
+</ul>
+<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">rasa init</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>查NLU version</li>
+</ul>
+<figure class="highlight llvm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -<span class="keyword">c</span> <span class="string">"import rasa_nlu; print(rasa_nlu.__version__);"</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>Run rasa server and open api</li>
+</ul>
+<figure class="highlight brainfuck"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">rasa</span> <span class="comment">run</span> <span class="literal">-</span><span class="comment">m</span> <span class="comment">models</span> --<span class="comment">enable</span><span class="literal">-</span><span class="comment">api</span> --<span class="comment">cors</span> <span class="comment">‘*’</span> --<span class="comment">debug</span></span><br></pre></td></tr></table></figure>
+<h3><span id="名詞">名詞</span></h3>
+<ul>
+<li>Named Entity Recognition(NER) 命名實體識別 : 標記語句中的字詞，例如:人名、地點、單位</li>
+<li>dialogue history</li>
+<li><a href="https://medium.com/@karpathy/software-2-0-a64152b37c35" target="_blank" rel="noopener">software 2.0</a></li>
+</ul>
+<h2><span id="安裝">安裝</span></h2>
+<ul>
+<li>Required Python 3.6 or 3.7</li>
+<li>安裝virtualenv虛擬環境，避免擾亂到系統</li>
+</ul>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-<span class="builtin-name">get</span> install python3-venv</span><br></pre></td></tr></table></figure>
+<ul>
+<li>建立虛擬環境</li>
+</ul>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 -m venv <span class="params">--system-site-packages</span> <span class="string">./</span>[虛擬環境名稱]</span><br></pre></td></tr></table></figure>
+<ul>
+<li>啟用這個虛擬環境</li>
+</ul>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">source <span class="string">./</span>[EnvirName]<span class="string">/bin/activate</span></span><br><span class="line">source <span class="string">./RASAEnv/bin/activate</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>關閉虛擬環境</li>
+</ul>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">deactivate</span><span class="meta"> [EnvirName]</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>RASA install</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> git <span class="built_in">clone</span> https://github.com/RasaHQ/rasa.git</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> rasa</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> pip install -r requirements.txt</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> pip install -e .</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>執行指令rasa train錯誤訊息:Segmentation fault (core dumped)無法training問題，主要是gym要重新安裝。</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">sudo apt <span class="keyword">update</span></span><br><span class="line"></span><br><span class="line">sudo apt <span class="keyword">install</span> python3-dev python3-pip python3-venv</span><br><span class="line"></span><br><span class="line">python3 -m venv <span class="comment">--system-site-packages ./venv-rasa</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">source</span> ./venv-rasa/<span class="keyword">bin</span>/<span class="keyword">activate</span></span><br><span class="line"></span><br><span class="line">pip3 <span class="keyword">install</span> -U pip</span><br><span class="line"></span><br><span class="line">pip3 <span class="keyword">install</span> rasa</span><br><span class="line"></span><br><span class="line">pip3 <span class="keyword">uninstall</span> gym</span><br><span class="line"></span><br><span class="line">pip3 <span class="keyword">install</span> gym==<span class="number">0.15</span><span class="number">.4</span></span><br><span class="line"></span><br><span class="line">pip3 <span class="keyword">uninstall</span> sanic-plugins-framework</span><br><span class="line"></span><br><span class="line">pip3 <span class="keyword">install</span> sanic-plugins-framework==<span class="number">0.8</span><span class="number">.2</span></span><br></pre></td></tr></table></figure>
+<h2><span id="rasa-nlu">RASA NLU</span></h2>
+<h3><span id="pipeline-類似文字處理生產線">pipeline 類似文字處理生產線</span></h3>
+<ul>
+<li>名詞解釋:messages經過一連串pre-processing、tokenize、entity extraction、intent classification的這一段處理過程，因此也稱作processing pipeline<br>
+而pipeline中的每一個處理步驟，例如:tokenize、entity extraction等則稱為component，一個pipeline中可以有多個component，根據case的需求自訂合適的components。<br>
+可以想像成<br>
+pipeline就像是一條食品生產線，在生產線中會經過一層層的工作站(Components)，負責食品的加工、包裝(pre-processing、entity extraction)</li>
+<li>pipeline有順序性，不同順序會產生不同的結果</li>
+<li><a href="https://legacy-docs.rasa.com/docs/nlu/components/" target="_blank" rel="noopener">RASA Component列表</a></li>
+</ul>
+<p>假設在RASA中，設定的pipeline:[“A Component”,“B Component”,“last Component”]<br>
+執行順序如下圖:<br>
+<img src="./xJLtqqm.png" alt></p>
+<ul>
+<li>
+<p>RASA 有提供預設的pipeline template，例如:</p>
+<ul>
+<li>pretrained_embeddings_spacy<br>
+包含以下components</li>
+</ul>
+  <figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">pipeline:</span></span><br><span class="line">- <span class="string">name:</span> <span class="string">"SpacyNLP"</span></span><br><span class="line">- <span class="string">name:</span> <span class="string">"SpacyTokenizer"</span></span><br><span class="line">- <span class="string">name:</span> <span class="string">"SpacyFeaturizer"</span></span><br><span class="line">- <span class="string">name:</span> <span class="string">"RegexFeaturizer"</span></span><br><span class="line">- <span class="string">name:</span> <span class="string">"CRFEntityExtractor"</span></span><br><span class="line">- <span class="string">name:</span> <span class="string">"EntitySynonymMapper"</span></span><br><span class="line">- <span class="string">name:</span> <span class="string">"SklearnIntentClassifier"</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>supervised_embeddings<br>
+包含以下components</li>
+</ul>
+  <figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">pipeline:</span></span><br><span class="line">- <span class="string">name:</span> <span class="string">"WhitespaceTokenizer"</span></span><br><span class="line">- <span class="string">name:</span> <span class="string">"CRFEntityExtractor"</span></span><br><span class="line">- <span class="string">name:</span> <span class="string">"EntitySynonymMapper"</span></span><br><span class="line">- <span class="string">name:</span> <span class="string">"CountVectorsFeaturizer"</span></span><br><span class="line">- <span class="string">name:</span> <span class="string">"EmbeddingIntentClassifier"</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3><span id="language-support">Language Support</span></h3>
+<p>pipeline 支援語言<br>
+<img src="./zV5OpRR.png" alt></p>
+<h3><span id="entity-extraction">Entity Extraction</span></h3>
+<p>code 表示式:<br>
+Entities -&gt; [name] (entityName)</p>
+<p><img src="./BtdFqS3.png" alt></p>
+<ul>
+<li>
+<p>Spacy extractor<br>
+<a href="https://explosion.ai/demos/displacy-ent" target="_blank" rel="noopener">displacy NER</a></p>
+</li>
+<li>
+<p>Regular Expressions 使用regex，可以幫助機器提升抓取Entity的效率<br>
+Example:</p>
+</li>
+</ul>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">## intent:inform_zipcode</span></span><br><span class="line"><span class="bullet">- </span>my zipcode is [<span class="string">12345</span>](<span class="link">zipcode</span>)</span><br><span class="line"><span class="bullet">- </span>my zipcode is [<span class="string">33456</span>](<span class="link">zipcode</span>)</span><br><span class="line"><span class="bullet">- </span>my zipcode is [<span class="string">94056</span>](<span class="link">zipcode</span>)</span><br><span class="line"><span class="section">## regex:zipcode</span></span><br><span class="line"><span class="bullet">- </span>[0-9]&#123;5&#125;</span><br></pre></td></tr></table></figure>
+<p><a href="https://regex101.com/" target="_blank" rel="noopener">live test</a></p>
+<ul>
+<li>duckling extractor<br>
+<a href="https://duckling.wit.ai/#try-it-out" target="_blank" rel="noopener">duckling live demo</a></li>
+</ul>
+<h2><span id="如何評估模型的好壞">如何評估模型的好壞</span></h2>
+<h2><span id="rasa-core">RASA Core</span></h2>
+<h3><span id="core-運作流程">Core 運作流程</span></h3>
+<p><img src="./HRiUskW.png" alt></p>
+<ol>
+<li>message會先在Interpreter進行資料轉換，轉換成字典集(包含original text、intent、entities)再傳遞給tracker</li>
+<li>Tracker(type:Object) 接收來自Interpreter的資訊，更新conversation state。(tracker負責追蹤目前的對話狀態，因使有關於訊息的資訊，大都可以在tracker中找到)</li>
+<li>Policy收到目前的Tracker state</li>
+<li>Policy根據接收到的狀態，決定要啟用哪一個Action</li>
+<li>Tracker會紀錄這次對話所採取的Action是什麼</li>
+<li>根據Action內容，回覆user</li>
+</ol>
+<h3><span id="action">Action</span></h3>
+<p>Bot對user採取的動作(response)<br>
+包含三種Action:</p>
+<ul>
+<li>default actions RASA預設<br>
+example: action_listen, action_restart, action_default_fallback<br>
+(All the default actions can be overwritten)</li>
+<li>utter actions 單純傳文字訊息<br>
+format: utter_[functionName]<br>
+定義在domain.yml中，例如:</li>
+</ul>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">templates:</span></span><br><span class="line"><span class="symbol">  utter_my_message:</span></span><br><span class="line">    - <span class="string">"this is what I want my action to say!"</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>custom actions 自訂動作<br>
+format: action_[functionName]<br>
+可以傳遞訊息或進行邏輯運算(例如:查使用者的訂單內容再回傳訊息)<br>
+若使用自訂的action，需要打開action server<br>
+(action server也可以使用node.js or .NET, java建立)<br>
+modify the endpoints.yml:</li>
+</ul>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">##uncomment</span></span><br><span class="line"><span class="symbol">action_endpoint:</span></span><br><span class="line"><span class="symbol">  url:</span> <span class="string">"http://localhost:5055/webhook"</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>FallbackAction(required FallbackPolicy)<br>
+若想嚴格控管bot的回覆品質，可以使用FallbackAction(Policy)，設定最低可以容忍的預測信心度是多少，若低於信心值，則啟用FallbackAction，回覆user : Sorry, I didn’t understand that等回應</li>
+</ul>
+<p>example:</p>
+<figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">*------------config.yml--------------------*</span><br><span class="line">  - name: <span class="string">"FallbackPolicy"</span></span><br><span class="line">    <span class="comment"># min confidence needed to accept an NLU prediction</span></span><br><span class="line">    nlu_threshold: <span class="number">0.3</span></span><br><span class="line">    <span class="comment"># min confidence needed to accept an action prediction from Rasa Core</span></span><br><span class="line">    core_threshold: <span class="number">0.3</span></span><br><span class="line">    <span class="comment"># name of the action to be called if the confidence of intent / action</span></span><br><span class="line">    <span class="comment"># is below the threshold</span></span><br><span class="line">    fallback_action_name: 'action_default_fallback'</span><br><span class="line"></span><br><span class="line">*-----------action.py---------------------*</span><br><span class="line"></span><br><span class="line">from rasa_core.policies.fallback <span class="built_in">import</span> FallbackPolicy</span><br><span class="line">from rasa_core.policies.keras_policy <span class="built_in">import</span> KerasPolicy</span><br><span class="line">from rasa_core.agent <span class="built_in">import</span> Agent</span><br><span class="line"></span><br><span class="line"><span class="attr">fallback</span> = FallbackPolicy(<span class="attr">fallback_action_name="action_default_fallback",</span></span><br><span class="line">                          <span class="attr">core_threshold=0.3,</span></span><br><span class="line">                          <span class="attr">nlu_threshold=0.3)</span></span><br><span class="line"></span><br><span class="line"><span class="attr">agent</span> = Agent(<span class="string">"domain.yml"</span>, <span class="attr">policies=[KerasPolicy(),</span> fallback])</span><br></pre></td></tr></table></figure>
+<h3><span id="slots-bot的記憶">Slots -  Bot的記憶</span></h3>
+<p>code 表示式<br>
+Slot -&gt; {“slotName”:“value”}</p>
+<ul>
+<li>Slot filling<br>
+將User意圖轉化為明確指令的流程<br>
+例如: 叫車服務Bot，將必要的資訊如:乘車起點/目的地、時間(每個必要資訊稱為一個插槽)，透過與User進行開放式與封閉式的對話，慢慢將曹填補起來的過程。</li>
+<li>Slots set</li>
+</ul>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">**domain.yml</span><br><span class="line"></span><br><span class="line"><span class="symbol">slots:</span></span><br><span class="line"><span class="symbol">  name:</span></span><br><span class="line"><span class="symbol">    type:</span> text</span><br><span class="line"><span class="symbol">    initial_value:</span> <span class="string">"human"</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><a href="https://legacy-docs.rasa.com/docs/core/api/slots_api/#slot-types" target="_blank" rel="noopener">slot types</a><br>
+if you dont’s want to affect the flow of the conversation, you can use ==unfeaturized== slot type.</li>
+</ul>
+<p>slot對於Policy來說，只會是0跟1的結果<br>
+0 -&gt; slot有值<br>
+1 -&gt; slot為空</p>
+<h3><span id="policy">Policy</span></h3>
+<p>decides which action to take at every step in the conversation.</p>
+<h3><span id="important-hyperparameter">important hyperparameter</span></h3>
+<ul>
+<li>max_history: This controls how much dialogue history the model looks at to decide which action to take next.</li>
+</ul>
+<h4><span id="memoization-policy">Memoization Policy</span></h4>
+<h4><span id="mappingpolicy">MappingPolicy</span></h4>
+<p>UserUtteranceReverted()</p>
+<h3><span id="featurization-詞向量">Featurization 詞向量</span></h3>
+<p>convert text to vector</p>
+<h3><span id="dispatcher">Dispatcher</span></h3>
+<p>bot對外溝通的窗口，透過dispatcher傳訊息給使用者</p>
+<h3><span id="interactive-learning">interactive learning</span></h3>
+<p>測試bot回覆的精準度，根據bot偵測的結果給予回饋，例如:User說hi，bot偵測到intent是bye，此時可以修正bot的預測選項，最後會產生出此次修正的 <a href="http://nlu.md" target="_blank" rel="noopener">nlu.md</a> , <a href="http://stories.md" target="_blank" rel="noopener">stories.md</a>。</p>
+<p>指令</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rasa <span class="built_in">run</span> actions <span class="comment">--actions actions &amp; rasa interactive -model --endpoints endpoints.yml</span></span><br></pre></td></tr></table></figure>
+<h3><span id="rasa-event">RASA Event</span></h3>
+<p>RASA Event:</p>
+<ul>
+<li>from rasa_sdk.events import Restarted : 重置對話內容</li>
+<li>from rasa_sdk.events import AllSlotsReset : 重製slots</li>
+<li>from rasa_sdk.events import FollowupAction : 指定執行特定action</li>
+<li>from rasa_sdk.forms import FormAction : 使用表單</li>
+</ul>
+<p>get current intent context<br>
+intent = tracker.latest_message[“intent”].get(“name”)</p>
+<h2><span id="problem-list">Problem list</span></h2>
+<h3><span id="rasadjango-cant-connect-to-django-server-on-vm">rasa+django can’t connect to django server on VM</span></h3>
+<p>solution: change command<br>
+original - python <a href="http://manage.py" target="_blank" rel="noopener">manage.py</a> runserver<br>
+replaced - python <a href="http://manage.py" target="_blank" rel="noopener">manage.py</a> runserver 0.0.0.0:8000</p>
+<h2><span id="reference">Reference</span></h2>
+<blockquote>
+<ul>
+<li><a href="https://spacy.io/usage/processing-pipelines" target="_blank" rel="noopener">Spacy</a></li>
+<li><a href="https://legacy-docs.rasa.com/docs/" target="_blank" rel="noopener">RASA Doc</a></li>
+<li><a href="https://towardsdatascience.com/a-beginners-guide-to-rasa-nlu-for-intent-classification-and-named-entity-recognition-a4f0f76b2a96" target="_blank" rel="noopener">A Beginner’s Guide to Rasa NLU for Intent Classification and Named-entity Recognition</a></li>
+</ul>
+</blockquote>
+
+
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                    
+                    <li class="next">
+                        <a href="/2020/04/12/損失函數-loss-cost-function代價函數/" data-toggle="tooltip" data-placement="top"
+                            title="損失函數 (loss/cost function代價函數)">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+            </div>
+
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">常用指令</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">名詞</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">安裝</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">RASA NLU</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.1.</span> <span class="toc-nav-text">pipeline 類似文字處理生產線</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.2.</span> <span class="toc-nav-text">Language Support</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.3.</span> <span class="toc-nav-text">Entity Extraction</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">如何評估模型的好壞</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">RASA Core</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.1.</span> <span class="toc-nav-text">Core 運作流程</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.2.</span> <span class="toc-nav-text">Action</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.3.</span> <span class="toc-nav-text">Slots -  Bot的記憶</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.4.</span> <span class="toc-nav-text">Policy</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.5.</span> <span class="toc-nav-text">important hyperparameter</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.5.1.</span> <span class="toc-nav-text">Memoization Policy</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.5.2.</span> <span class="toc-nav-text">MappingPolicy</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.6.</span> <span class="toc-nav-text">Featurization 詞向量</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.7.</span> <span class="toc-nav-text">Dispatcher</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.8.</span> <span class="toc-nav-text">interactive learning</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.9.</span> <span class="toc-nav-text">RASA Event</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">6.</span> <span class="toc-nav-text">Problem list</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">6.1.</span> <span class="toc-nav-text">rasa+django can’t connect to django server on VM</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">7.</span> <span class="toc-nav-text">Reference</span></a></li></ol>
+        
+        </div>
+      </aside>
+    
+
+
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#NLP"
+                            title="NLP">NLP</a>
+                        
+                        <a class="tag" href="/tags/#RASA"
+                            title="RASA">RASA</a>
+                        
+                        <a class="tag" href="/tags/#chatbot"
+                            title="chatbot">chatbot</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js", function () {
+        anchors.options = {
+            visible: 'hover',
+            placement: 'left',
+            icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link {
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top: -0.1em;
+        }
+    }
+</style>
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank" href="https://www.facebook.com/enxiang.zhao">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/zhaoRuby">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://www.linkedin.com/in/enxiang-zhao-9a6695164">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Ruby Zhao 2020 
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    re-Ported by <a href="http://beantech.org">BeanTech</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=YenYuHsuan&repo=hexo-theme-beantech&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://rubyzhao_blog.nctu.me/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-XXXXXXXX-X';
+    var _gaDomain = 'http://rubyzhao_blog.nctu.me/';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://rubyzhao_blog.nctu.me/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
