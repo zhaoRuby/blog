@@ -37,6 +37,13 @@
     </url>
 
     <url>
+        <loc>http://rubyzhao_blog.nctu.me/tags/NLP/</loc>
+        <lastmod>2020-04-07T14:24:32.704Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
         <loc>http://rubyzhao_blog.nctu.me/tags/machine-learning/</loc>
         <lastmod>2020-04-07T14:24:32.704Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -44,8 +51,8 @@
     </url>
 
     <url>
-        <loc>http://rubyzhao_blog.nctu.me/tags/NLP/</loc>
-        <lastmod>2020-04-07T14:24:32.704Z</lastmod>
+        <loc>http://rubyzhao_blog.nctu.me/tags/Math/</loc>
+        <lastmod>2020-04-12T06:12:00.199Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
