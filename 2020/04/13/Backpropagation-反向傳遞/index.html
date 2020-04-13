@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content>
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          Backpropagation 反向傳遞 - Ruby&#39;s Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://rubyzhao_blog.nctu.me/2020/04/13/Backpropagation-反向傳遞/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('../../../../img/post_bg.jpg')
+            /*post*/
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#machine learning" title="machine learning">machine learning</a>
+                            
+                        </div>
+                        <h1>Backpropagation 反向傳遞</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by Ruby Zhao on
+                            2020-04-13
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Ruby&#39;s Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                    
+                    
+
+                    
+                    <li>
+                        <a href="/archive/">Archives</a>
+                    </li>
+                    
+                    
+
+                    
+                    <li>
+                        <a href="/about/">About me</a>
+                    </li>
+                    
+                    
+
+                    
+                    <li>
+                        <a href="/tags/">Tags</a>
+                    </li>
+                    
+                    
+
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e) {
+        if ($navbar.className.indexOf('in') > 0) {
+            // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function () {
+                // prevent frequently toggle
+                if ($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            }, 400)
+        } else {
+            // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h2><span id="keyword">keyword</span></h2>
+<ul>
+<li>
+<p><a href="http://tutorial.math.lamar.edu/Classes/CalcI/ChainRule.aspx" target="_blank" rel="noopener">ChainRole</a><br>
+<img src="./SjDpaKe.png" alt></p>
+</li>
+<li>
+<p><a href="https://www.analyzemath.com/calculus/multivariable/partial_derivatives.html" target="_blank" rel="noopener">partial derivatives 偏微分</a><br>
+假設有某個函數，若要對x偏微分，就把其他非x的值看成常數(constant)</p>
+</li>
+<li>
+<p><a href="https://en.wikipedia.org/wiki/Mean_squared_error" target="_blank" rel="noopener">誤差值 MSE</a></p>
+</li>
+</ul>
+<h2><span id="說明">說明</span></h2>
+<p>用於更新模型的權重值，降低模型預測結果與實際結果的誤差值</p>
+<h2><span id="運作流程">運作流程</span></h2>
+<p>假設有個模型如下：<br>
+<img src="./QGPeY8Y.png" alt></p>
+<ul>
+<li>輸入值  i1 = 0.05 , i2 = 0.1</li>
+<li>輸入值通往第一層Hidden layer的權重值預設為:<br>
+w1 = 0.15, w2 = 0.2 , w3 = 0.25 , w4 = 0.3</li>
+<li>第一層Hidden Layer(h1,h2)往output(o1,o2)的權重值預設為:<br>
+w5 = 0.4 , w6 = 0.45 , w7 = 0.5 , w8 = 0.55</li>
+<li>第一層Hidden Layer Bias = 0.35 = b1</li>
+<li>Output Layer Bias = 0.6 = b2</li>
+<li>o1 實際答案:0.01 , o2 實際答案:0.99<br>
+在進行反向傳遞之前，需要做一次Forward計算出Model Total Error valye</li>
+</ul>
+<h3><span id="forward-flow">Forward flow</span></h3>
+<p>根據上面的圖示</p>
+<ol>
+<li>
+<p>算出hidden value<br>
+h1的算法:<br>
+$h1 = i1 * w1 + i2 * w2 + b1 = 0.05<em>0.15+0.1</em>0.2+0.35=0.3775$</p>
+</li>
+<li>
+<p>標準化hidden value，以下稱作 out_h1 , out_h2<br>
+使用activation function，在這個範例中，我們使用logistic function(sigmoid)<br>
+將值規範在0~1之間<br>
+sigmoid(h1) = out_h1 = 0.593269992<br>
+sigmoid(h2) = out_h2 = 0.596884378</p>
+</li>
+<li>
+<p>依前面的算法依此類推，根據out_h1 , out_h2算出out_o1 , out_o2<br>
+out_o1,out_o2就是模型的預測結果:<br>
+sigmoid(o1) = sigmoid(out_h1 * w5 + out_h2 * w6 + b2) = 0.75136507<br>
+sigmoid(o2) = 0.772928465</p>
+</li>
+<li>
+<p>算出模型的誤差值<br>
+算誤差值的方法，可以使用取平均或是取平方差的方式計算<br>
+在這個範例中，使用的是平方差<br>
+=&gt; MSE <img src="./wvoPbOM.png" alt></p>
+</li>
+</ol>
+<p>依照範例參數 =&gt; $E_total = ∑ 1/2(target_o1 - out_o1)^2$<br>
+因為我們有兩個輸出值，會有兩個誤差值，所以總誤差值為：<br>
+$E_total = E_o1 + E_o2 = 1/2(0.01 - 0.75136507)^2 + 1/2(0.99 - 0.772928465)^2$</p>
+<p>算出誤差值後，就可以根據誤差值推算出每個權重值影響誤差值的程度，再透過學習率慢慢更新權重參數，降低模型預測的誤差值</p>
+<h3><span id="backward-flow">Backward flow</span></h3>
+<p>Backward需要用到偏微分與chain role的觀念，可參考keyword連結</p>
+<p><img src="./Lx7kZk1.png" alt></p>
+<p><img src="./r1jEvVo.png" alt><br>
+E對w5微分<br>
+意義：w5的權重值影響總誤差值的程度</p>
+<p>根據chain role，可以將E對w5微分轉成下面的式子<br>
+<img src="./cQGkJI2.png" alt></p>
+<ol>
+<li>算E對out_o1微分(out_o2依此類推)<br>
+<img src="./Wi5M2G3.png" alt></li>
+</ol>
+<p><img src="./VWxt44G.png" alt></p>
+<p><img src="./3TUv15i.png" alt></p>
+<ol start="2">
+<li>算out_o1對net_o1微分(net_o1就是沒有經過sigmoid的原始值)<br>
+<img src="./FZvXAY4.png" alt></li>
+</ol>
+<p>out_o2對net_o2微分算法同上</p>
+<ol start="3">
+<li>算net_o1對w5微分<br>
+<img src="./uRHYEKJ.png" alt></li>
+</ol>
+<p><img src="./FbffCiX.png" alt></p>
+<ol start="4">
+<li>透過自訂的learning rate <img src="./t1i8yhc.png" alt>   =&gt;符號唸eta<br>
+更新w5權重值，假設我們設定rate=0.5<br>
+<img src="./c7YZpTl.png" alt></li>
+</ol>
+<p>其他權重值的算法如同上面的流程一樣，比較要注意的是，例如:計算h1對誤差值的影響程度，根據模型flow會是兩個E_o1,E_o2相加所得<br>
+<img src="./MBFfQnJ.png" alt></p>
+<p>經過N次的權重更新後，模型的誤差值通常會慢慢地降低</p>
+<h2><span id="code-python">Code (python)</span></h2>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> random</span><br><span class="line"><span class="keyword">import</span> math</span><br><span class="line"></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># Shorthand:</span></span><br><span class="line"><span class="comment">#   "pd_" as a variable prefix means "partial derivative"</span></span><br><span class="line"><span class="comment">#   "d_" as a variable prefix means "derivative"</span></span><br><span class="line"><span class="comment">#   "_wrt_" is shorthand for "with respect to"</span></span><br><span class="line"><span class="comment">#   "w_ho" and "w_ih" are the index of weights from hidden to output layer neurons and input to hidden layer neurons respectively</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># Comment references:</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># [1] Wikipedia article on Backpropagation</span></span><br><span class="line"><span class="comment">#   http://en.wikipedia.org/wiki/Backpropagation#Finding_the_derivative_of_the_error</span></span><br><span class="line"><span class="comment"># [2] Neural Networks for Machine Learning course on Coursera by Geoffrey Hinton</span></span><br><span class="line"><span class="comment">#   https://class.coursera.org/neuralnets-2012-001/lecture/39</span></span><br><span class="line"><span class="comment"># [3] The Back Propagation Algorithm</span></span><br><span class="line"><span class="comment">#   https://www4.rgu.ac.uk/files/chapter3%20-%20bp.pdf</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">NeuralNetwork</span>:</span></span><br><span class="line">    LEARNING_RATE = <span class="number">0.5</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, num_inputs, num_hidden, num_outputs, hidden_layer_weights = None, hidden_layer_bias = None, output_layer_weights = None, output_layer_bias = None)</span>:</span></span><br><span class="line">        self.num_inputs = num_inputs</span><br><span class="line"></span><br><span class="line">        self.hidden_layer = NeuronLayer(num_hidden, hidden_layer_bias)</span><br><span class="line">        self.output_layer = NeuronLayer(num_outputs, output_layer_bias)</span><br><span class="line"></span><br><span class="line">        self.init_weights_from_inputs_to_hidden_layer_neurons(hidden_layer_weights)</span><br><span class="line">        self.init_weights_from_hidden_layer_neurons_to_output_layer_neurons(output_layer_weights)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">init_weights_from_inputs_to_hidden_layer_neurons</span><span class="params">(self, hidden_layer_weights)</span>:</span></span><br><span class="line">        weight_num = <span class="number">0</span></span><br><span class="line">        <span class="keyword">for</span> h <span class="keyword">in</span> range(len(self.hidden_layer.neurons)):</span><br><span class="line">            <span class="keyword">for</span> i <span class="keyword">in</span> range(self.num_inputs):</span><br><span class="line">                <span class="keyword">if</span> <span class="keyword">not</span> hidden_layer_weights:</span><br><span class="line">                    self.hidden_layer.neurons[h].weights.append(random.random())</span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    self.hidden_layer.neurons[h].weights.append(hidden_layer_weights[weight_num])</span><br><span class="line">                weight_num += <span class="number">1</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">init_weights_from_hidden_layer_neurons_to_output_layer_neurons</span><span class="params">(self, output_layer_weights)</span>:</span></span><br><span class="line">        weight_num = <span class="number">0</span></span><br><span class="line">        <span class="keyword">for</span> o <span class="keyword">in</span> range(len(self.output_layer.neurons)):</span><br><span class="line">            <span class="keyword">for</span> h <span class="keyword">in</span> range(len(self.hidden_layer.neurons)):</span><br><span class="line">                <span class="keyword">if</span> <span class="keyword">not</span> output_layer_weights:</span><br><span class="line">                    self.output_layer.neurons[o].weights.append(random.random())</span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    self.output_layer.neurons[o].weights.append(output_layer_weights[weight_num])</span><br><span class="line">                weight_num += <span class="number">1</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">inspect</span><span class="params">(self)</span>:</span></span><br><span class="line">        print(<span class="string">'------'</span>)</span><br><span class="line">        print(<span class="string">'* Inputs: &#123;&#125;'</span>.format(self.num_inputs))</span><br><span class="line">        print(<span class="string">'------'</span>)</span><br><span class="line">        print(<span class="string">'Hidden Layer'</span>)</span><br><span class="line">        self.hidden_layer.inspect()</span><br><span class="line">        print(<span class="string">'------'</span>)</span><br><span class="line">        print(<span class="string">'* Output Layer'</span>)</span><br><span class="line">        self.output_layer.inspect()</span><br><span class="line">        print(<span class="string">'------'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">feed_forward</span><span class="params">(self, inputs)</span>:</span></span><br><span class="line">        hidden_layer_outputs = self.hidden_layer.feed_forward(inputs)</span><br><span class="line">        <span class="keyword">return</span> self.output_layer.feed_forward(hidden_layer_outputs)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Uses online learning, ie updating the weights after each training case</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">train</span><span class="params">(self, training_inputs, training_outputs)</span>:</span></span><br><span class="line">        self.feed_forward(training_inputs)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 1. Output neuron deltas</span></span><br><span class="line">        pd_errors_wrt_output_neuron_total_net_input = [<span class="number">0</span>] * len(self.output_layer.neurons)</span><br><span class="line">        <span class="keyword">for</span> o <span class="keyword">in</span> range(len(self.output_layer.neurons)):</span><br><span class="line"></span><br><span class="line">            <span class="comment"># ∂E/∂zⱼ</span></span><br><span class="line">            pd_errors_wrt_output_neuron_total_net_input[o] = self.output_layer.neurons[o].calculate_pd_error_wrt_total_net_input(training_outputs[o])</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 2. Hidden neuron deltas</span></span><br><span class="line">        pd_errors_wrt_hidden_neuron_total_net_input = [<span class="number">0</span>] * len(self.hidden_layer.neurons)</span><br><span class="line">        <span class="keyword">for</span> h <span class="keyword">in</span> range(len(self.hidden_layer.neurons)):</span><br><span class="line"></span><br><span class="line">            <span class="comment"># We need to calculate the derivative of the error with respect to the output of each hidden layer neuron</span></span><br><span class="line">            <span class="comment"># dE/dyⱼ = Σ ∂E/∂zⱼ * ∂z/∂yⱼ = Σ ∂E/∂zⱼ * wᵢⱼ</span></span><br><span class="line">            d_error_wrt_hidden_neuron_output = <span class="number">0</span></span><br><span class="line">            <span class="keyword">for</span> o <span class="keyword">in</span> range(len(self.output_layer.neurons)):</span><br><span class="line">                d_error_wrt_hidden_neuron_output += pd_errors_wrt_output_neuron_total_net_input[o] * self.output_layer.neurons[o].weights[h]</span><br><span class="line"></span><br><span class="line">            <span class="comment"># ∂E/∂zⱼ = dE/dyⱼ * ∂zⱼ/∂</span></span><br><span class="line">            pd_errors_wrt_hidden_neuron_total_net_input[h] = d_error_wrt_hidden_neuron_output * self.hidden_layer.neurons[h].calculate_pd_total_net_input_wrt_input()</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 3. Update output neuron weights</span></span><br><span class="line">        <span class="keyword">for</span> o <span class="keyword">in</span> range(len(self.output_layer.neurons)):</span><br><span class="line">            <span class="keyword">for</span> w_ho <span class="keyword">in</span> range(len(self.output_layer.neurons[o].weights)):</span><br><span class="line"></span><br><span class="line">                <span class="comment"># ∂Eⱼ/∂wᵢⱼ = ∂E/∂zⱼ * ∂zⱼ/∂wᵢⱼ</span></span><br><span class="line">                pd_error_wrt_weight = pd_errors_wrt_output_neuron_total_net_input[o] * self.output_layer.neurons[o].calculate_pd_total_net_input_wrt_weight(w_ho)</span><br><span class="line"></span><br><span class="line">                <span class="comment"># Δw = α * ∂Eⱼ/∂wᵢ</span></span><br><span class="line">                self.output_layer.neurons[o].weights[w_ho] -= self.LEARNING_RATE * pd_error_wrt_weight</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 4. Update hidden neuron weights</span></span><br><span class="line">        <span class="keyword">for</span> h <span class="keyword">in</span> range(len(self.hidden_layer.neurons)):</span><br><span class="line">            <span class="keyword">for</span> w_ih <span class="keyword">in</span> range(len(self.hidden_layer.neurons[h].weights)):</span><br><span class="line"></span><br><span class="line">                <span class="comment"># ∂Eⱼ/∂wᵢ = ∂E/∂zⱼ * ∂zⱼ/∂wᵢ</span></span><br><span class="line">                pd_error_wrt_weight = pd_errors_wrt_hidden_neuron_total_net_input[h] * self.hidden_layer.neurons[h].calculate_pd_total_net_input_wrt_weight(w_ih)</span><br><span class="line"></span><br><span class="line">                <span class="comment"># Δw = α * ∂Eⱼ/∂wᵢ</span></span><br><span class="line">                self.hidden_layer.neurons[h].weights[w_ih] -= self.LEARNING_RATE * pd_error_wrt_weight</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">calculate_total_error</span><span class="params">(self, training_sets)</span>:</span></span><br><span class="line">        total_error = <span class="number">0</span></span><br><span class="line">        <span class="keyword">for</span> t <span class="keyword">in</span> range(len(training_sets)):</span><br><span class="line">            training_inputs, training_outputs = training_sets[t]</span><br><span class="line">            self.feed_forward(training_inputs)</span><br><span class="line">            <span class="keyword">for</span> o <span class="keyword">in</span> range(len(training_outputs)):</span><br><span class="line">                total_error += self.output_layer.neurons[o].calculate_error(training_outputs[o])</span><br><span class="line">        <span class="keyword">return</span> total_error</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">NeuronLayer</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, num_neurons, bias)</span>:</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># Every neuron in a layer shares the same bias</span></span><br><span class="line">        self.bias = bias <span class="keyword">if</span> bias <span class="keyword">else</span> random.random()</span><br><span class="line"></span><br><span class="line">        self.neurons = []</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(num_neurons):</span><br><span class="line">            self.neurons.append(Neuron(self.bias))</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">inspect</span><span class="params">(self)</span>:</span></span><br><span class="line">        print(<span class="string">'Neurons:'</span>, len(self.neurons))</span><br><span class="line">        <span class="keyword">for</span> n <span class="keyword">in</span> range(len(self.neurons)):</span><br><span class="line">            print(<span class="string">' Neuron'</span>, n)</span><br><span class="line">            <span class="keyword">for</span> w <span class="keyword">in</span> range(len(self.neurons[n].weights)):</span><br><span class="line">                print(<span class="string">'  Weight:'</span>, self.neurons[n].weights[w])</span><br><span class="line">            print(<span class="string">'  Bias:'</span>, self.bias)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">feed_forward</span><span class="params">(self, inputs)</span>:</span></span><br><span class="line">        outputs = []</span><br><span class="line">        <span class="keyword">for</span> neuron <span class="keyword">in</span> self.neurons:</span><br><span class="line">            outputs.append(neuron.calculate_output(inputs))</span><br><span class="line">        <span class="keyword">return</span> outputs</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_outputs</span><span class="params">(self)</span>:</span></span><br><span class="line">        outputs = []</span><br><span class="line">        <span class="keyword">for</span> neuron <span class="keyword">in</span> self.neurons:</span><br><span class="line">            outputs.append(neuron.output)</span><br><span class="line">        <span class="keyword">return</span> outputs</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Neuron</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, bias)</span>:</span></span><br><span class="line">        self.bias = bias</span><br><span class="line">        self.weights = []</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">calculate_output</span><span class="params">(self, inputs)</span>:</span></span><br><span class="line">        self.inputs = inputs</span><br><span class="line">        self.output = self.squash(self.calculate_total_net_input())</span><br><span class="line">        <span class="keyword">return</span> self.output</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">calculate_total_net_input</span><span class="params">(self)</span>:</span></span><br><span class="line">        total = <span class="number">0</span></span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(len(self.inputs)):</span><br><span class="line">            total += self.inputs[i] * self.weights[i]</span><br><span class="line">        <span class="keyword">return</span> total + self.bias</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Apply the logistic function to squash the output of the neuron</span></span><br><span class="line">    <span class="comment"># The result is sometimes referred to as 'net' [2] or 'net' [1]</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">squash</span><span class="params">(self, total_net_input)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span> / (<span class="number">1</span> + math.exp(-total_net_input))</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Determine how much the neuron's total input has to change to move closer to the expected output</span></span><br><span class="line">    <span class="comment">#</span></span><br><span class="line">    <span class="comment"># Now that we have the partial derivative of the error with respect to the output (∂E/∂yⱼ) and</span></span><br><span class="line">    <span class="comment"># the derivative of the output with respect to the total net input (dyⱼ/dzⱼ) we can calculate</span></span><br><span class="line">    <span class="comment"># the partial derivative of the error with respect to the total net input.</span></span><br><span class="line">    <span class="comment"># This value is also known as the delta (δ) [1]</span></span><br><span class="line">    <span class="comment"># δ = ∂E/∂zⱼ = ∂E/∂yⱼ * dyⱼ/dzⱼ</span></span><br><span class="line">    <span class="comment">#</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">calculate_pd_error_wrt_total_net_input</span><span class="params">(self, target_output)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self.calculate_pd_error_wrt_output(target_output) * self.calculate_pd_total_net_input_wrt_input();</span><br><span class="line"></span><br><span class="line">    <span class="comment"># The error for each neuron is calculated by the Mean Square Error method:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">calculate_error</span><span class="params">(self, target_output)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0.5</span> * (target_output - self.output) ** <span class="number">2</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># The partial derivate of the error with respect to actual output then is calculated by:</span></span><br><span class="line">    <span class="comment"># = 2 * 0.5 * (target output - actual output) ^ (2 - 1) * -1</span></span><br><span class="line">    <span class="comment"># = -(target output - actual output)</span></span><br><span class="line">    <span class="comment">#</span></span><br><span class="line">    <span class="comment"># The Wikipedia article on backpropagation [1] simplifies to the following, but most other learning material does not [2]</span></span><br><span class="line">    <span class="comment"># = actual output - target output</span></span><br><span class="line">    <span class="comment">#</span></span><br><span class="line">    <span class="comment"># Alternative, you can use (target - output), but then need to add it during backpropagation [3]</span></span><br><span class="line">    <span class="comment">#</span></span><br><span class="line">    <span class="comment"># Note that the actual output of the output neuron is often written as yⱼ and target output as tⱼ so:</span></span><br><span class="line">    <span class="comment"># = ∂E/∂yⱼ = -(tⱼ - yⱼ)</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">calculate_pd_error_wrt_output</span><span class="params">(self, target_output)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> -(target_output - self.output)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># The total net input into the neuron is squashed using logistic function to calculate the neuron's output:</span></span><br><span class="line">    <span class="comment"># yⱼ = φ = 1 / (1 + e^(-zⱼ))</span></span><br><span class="line">    <span class="comment"># Note that where ⱼ represents the output of the neurons in whatever layer we're looking at and ᵢ represents the layer below it</span></span><br><span class="line">    <span class="comment">#</span></span><br><span class="line">    <span class="comment"># The derivative (not partial derivative since there is only one variable) of the output then is:</span></span><br><span class="line">    <span class="comment"># dyⱼ/dzⱼ = yⱼ * (1 - yⱼ)</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">calculate_pd_total_net_input_wrt_input</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self.output * (<span class="number">1</span> - self.output)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># The total net input is the weighted sum of all the inputs to the neuron and their respective weights:</span></span><br><span class="line">    <span class="comment"># = zⱼ = netⱼ = x₁w₁ + x₂w₂ ...</span></span><br><span class="line">    <span class="comment">#</span></span><br><span class="line">    <span class="comment"># The partial derivative of the total net input with respective to a given weight (with everything else held constant) then is:</span></span><br><span class="line">    <span class="comment"># = ∂zⱼ/∂wᵢ = some constant + 1 * xᵢw₁^(1-0) + some constant ... = xᵢ</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">calculate_pd_total_net_input_wrt_weight</span><span class="params">(self, index)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self.inputs[index]</span><br><span class="line"></span><br><span class="line"><span class="comment">###</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Blog post example:</span></span><br><span class="line"></span><br><span class="line">nn = NeuralNetwork(<span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, hidden_layer_weights=[<span class="number">0.15</span>, <span class="number">0.2</span>, <span class="number">0.25</span>, <span class="number">0.3</span>], hidden_layer_bias=<span class="number">0.35</span>, output_layer_weights=[<span class="number">0.4</span>, <span class="number">0.45</span>, <span class="number">0.5</span>, <span class="number">0.55</span>], output_layer_bias=<span class="number">0.6</span>)</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1000</span>):</span><br><span class="line">    nn.train([<span class="number">0.05</span>, <span class="number">0.1</span>], [<span class="number">0.01</span>, <span class="number">0.99</span>])</span><br><span class="line">    print(i, round(nn.calculate_total_error([[[<span class="number">0.05</span>, <span class="number">0.1</span>], [<span class="number">0.01</span>, <span class="number">0.99</span>]]]), <span class="number">9</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># XOR example:</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># training_sets = [</span></span><br><span class="line"><span class="comment">#     [[0, 0], [0]],</span></span><br><span class="line"><span class="comment">#     [[0, 1], [1]],</span></span><br><span class="line"><span class="comment">#     [[1, 0], [1]],</span></span><br><span class="line"><span class="comment">#     [[1, 1], [0]]</span></span><br><span class="line"><span class="comment"># ]</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># nn = NeuralNetwork(len(training_sets[0][0]), 5, len(training_sets[0][1]))</span></span><br><span class="line"><span class="comment"># for i in range(10000):</span></span><br><span class="line"><span class="comment">#     training_inputs, training_outputs = random.choice(training_sets)</span></span><br><span class="line"><span class="comment">#     nn.train(training_inputs, training_outputs)</span></span><br><span class="line"><span class="comment">#     print(i, nn.calculate_total_error(training_sets))</span></span><br></pre></td></tr></table></figure>
+<h2><span id="code-執行結果">Code 執行結果</span></h2>
+<p>執行1次的誤差值 = 0.291027774<br>
+<img src="./BZy75sa.png" alt></p>
+<p>執行10次的誤差值，從0.291027774降到0.220918592<br>
+<img src="./7lnBivT.png" alt></p>
+<p>執行1000次的誤差值 = 0.001114349 下降很多<br>
+<img src="./3f3ALpe.png" alt></p>
+<h2><span id="reference">Reference</span></h2>
+<p><a href="https://mattmazur.com/2015/03/17/a-step-by-step-backpropagation-example/" target="_blank" rel="noopener">A Step by Step Backpropagation Example</a></p>
+
+
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                    
+                    <li class="next">
+                        <a href="/2020/04/12/RASA架構/" data-toggle="tooltip" data-placement="top"
+                            title="RASA架構">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+            </div>
+
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">keyword</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">說明</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">運作流程</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.1.</span> <span class="toc-nav-text">Forward flow</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.2.</span> <span class="toc-nav-text">Backward flow</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">Code (python)</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">Code 執行結果</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">6.</span> <span class="toc-nav-text">Reference</span></a></li></ol>
+        
+        </div>
+      </aside>
+    
+
+
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#machine learning"
+                            title="machine learning">machine learning</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js", function () {
+        anchors.options = {
+            visible: 'hover',
+            placement: 'left',
+            icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link {
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top: -0.1em;
+        }
+    }
+</style>
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank" href="https://www.facebook.com/enxiang.zhao">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/zhaoRuby">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://www.linkedin.com/in/enxiang-zhao-9a6695164">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Ruby Zhao 2020 
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    re-Ported by <a href="http://beantech.org">BeanTech</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=YenYuHsuan&repo=hexo-theme-beantech&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://rubyzhao_blog.nctu.me/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-XXXXXXXX-X';
+    var _gaDomain = 'http://rubyzhao_blog.nctu.me/';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://rubyzhao_blog.nctu.me/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
