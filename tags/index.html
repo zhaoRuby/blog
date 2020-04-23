@@ -135,14 +135,14 @@
 
                     
                     <li>
-                        <a href="/archive/">Archives</a>
+                        <a href="/about/">About me</a>
                     </li>
                     
                     
 
                     
                     <li>
-                        <a href="/about/">About me</a>
+                        <a href="/archive/">Archives</a>
                     </li>
                     
                     
@@ -198,6 +198,8 @@
             <!-- 标签云 -->
             <div id='tag_cloud' class="tags">
                 
+                    <a href="#Python" title="Python" rel="1">Python</a>
+                
                     <a href="#NLP" title="NLP" rel="4">NLP</a>
                 
                     <a href="#GloVe" title="GloVe" rel="1">GloVe</a>
@@ -214,14 +216,36 @@
                 
                     <a href="#Math" title="Math" rel="2">Math</a>
                 
-                    <a href="#LSTM" title="LSTM" rel="1">LSTM</a>
-                
                     <a href="#machine learning" title="machine learning" rel="2">machine learning</a>
+                
+                    <a href="#LSTM" title="LSTM" rel="1">LSTM</a>
                 
             </div>
 
             <!-- 标签列表 -->
 
+            
+            <div class="one-tag-list">
+                <span class="fa fa-tag listing-seperator" id="Python">
+                    <span class="tag-text">Python</span>
+                </span>
+                
+                  <!-- <li class="listing-item">
+                  <time datetime="{{ post.date | date:"%Y-%m-%d" }}">{{ post.date | date:"%Y-%m-%d" }}</time>
+                  <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
+                  </li> -->
+                 <div class="post-preview">
+                     <a href="/2020/04/23/Python-惱人的單、雙冒號/">
+                        <h2 class="post-title">
+                            [Python] 惱人的單、雙冒號
+                        </h2>
+                        
+                    </a>
+                    <!-- <p class="post-meta">{{ post.date | date:"%Y-%m-%d" }}</p> -->
+                </div>
+                <hr>
+                
+            </div>
             
             <div class="one-tag-list">
                 <span class="fa fa-tag listing-seperator" id="NLP">
@@ -263,10 +287,14 @@
                   <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
                   </li> -->
                  <div class="post-preview">
-                     <a href="/2020/03/23/實際走一趟NLP流程/">
+                     <a href="/2020/04/07/Teacher-forcing/">
                         <h2 class="post-title">
-                            實際走一趟NLP流程
+                            Teacher forcing
                         </h2>
+                        
+                            <h3 class="post-subtitle">
+                                訓練模型的方法
+                            </h3>
                         
                     </a>
                     <!-- <p class="post-meta">{{ post.date | date:"%Y-%m-%d" }}</p> -->
@@ -278,14 +306,10 @@
                   <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
                   </li> -->
                  <div class="post-preview">
-                     <a href="/2020/04/07/Teacher-forcing/">
+                     <a href="/2020/03/23/實際走一趟NLP流程/">
                         <h2 class="post-title">
-                            Teacher forcing
+                            實際走一趟NLP流程
                         </h2>
-                        
-                            <h3 class="post-subtitle">
-                                訓練模型的方法
-                            </h3>
                         
                     </a>
                     <!-- <p class="post-meta">{{ post.date | date:"%Y-%m-%d" }}</p> -->
@@ -464,28 +488,6 @@
             </div>
             
             <div class="one-tag-list">
-                <span class="fa fa-tag listing-seperator" id="LSTM">
-                    <span class="tag-text">LSTM</span>
-                </span>
-                
-                  <!-- <li class="listing-item">
-                  <time datetime="{{ post.date | date:"%Y-%m-%d" }}">{{ post.date | date:"%Y-%m-%d" }}</time>
-                  <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
-                  </li> -->
-                 <div class="post-preview">
-                     <a href="/2020/03/23/實際走一趟NLP流程/">
-                        <h2 class="post-title">
-                            實際走一趟NLP流程
-                        </h2>
-                        
-                    </a>
-                    <!-- <p class="post-meta">{{ post.date | date:"%Y-%m-%d" }}</p> -->
-                </div>
-                <hr>
-                
-            </div>
-            
-            <div class="one-tag-list">
                 <span class="fa fa-tag listing-seperator" id="machine learning">
                     <span class="tag-text">machine learning</span>
                 </span>
@@ -517,6 +519,28 @@
                      <a href="/2020/04/13/Backpropagation-反向傳遞/">
                         <h2 class="post-title">
                             Backpropagation 反向傳遞
+                        </h2>
+                        
+                    </a>
+                    <!-- <p class="post-meta">{{ post.date | date:"%Y-%m-%d" }}</p> -->
+                </div>
+                <hr>
+                
+            </div>
+            
+            <div class="one-tag-list">
+                <span class="fa fa-tag listing-seperator" id="LSTM">
+                    <span class="tag-text">LSTM</span>
+                </span>
+                
+                  <!-- <li class="listing-item">
+                  <time datetime="{{ post.date | date:"%Y-%m-%d" }}">{{ post.date | date:"%Y-%m-%d" }}</time>
+                  <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
+                  </li> -->
+                 <div class="post-preview">
+                     <a href="/2020/03/23/實際走一趟NLP流程/">
+                        <h2 class="post-title">
+                            實際走一趟NLP流程
                         </h2>
                         
                     </a>

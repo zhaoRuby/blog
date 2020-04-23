@@ -14,11 +14,11 @@
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <title>
         
-          SVD 奇異值分解 - Ruby&#39;s Blog
+          [Python] 惱人的單、雙冒號 - Ruby&#39;s Blog
         
     </title>
 
-    <link rel="canonical" href="http://rubyzhao_blog.nctu.me/2020/04/12/SVD-奇異值分解/">
+    <link rel="canonical" href="http://rubyzhao_blog.nctu.me/2020/04/23/Python-惱人的單、雙冒號/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -86,14 +86,14 @@
                     <div class="post-heading">
                         <div class="tags">
                             
-                              <a class="tag" href="/tags/#Math" title="Math">Math</a>
+                              <a class="tag" href="/tags/#Python" title="Python">Python</a>
                             
                         </div>
-                        <h1>SVD 奇異值分解</h1>
+                        <h1>[Python] 惱人的單、雙冒號</h1>
                         <h2 class="subheading"></h2>
                         <span class="meta">
                             Posted by Ruby Zhao on
-                            2020-04-12
+                            2020-04-23
                         </span>
                     </div>
                 
@@ -209,44 +209,36 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <h2><span id="singular-value-decomposition">Singular Value Decomposition</span></h2>
-<p>沒有限定矩陣大小</p>
-<p>假設有一大小為mxn的矩陣A，我們希望能將矩陣A分解成三個矩陣且三個矩陣相乘能夠與矩陣A相同，<br>
-即符合A = U x D(sigma) x V 的式子<br>
-其中U、V為正交矩陣，D為A的奇異值，是一個對角矩陣(也就是只有對角線的位置有大於等於零的值，其餘皆為零)</p>
-<p>分解圖如下:<br>
-k是我們可以自訂的特徵值個數<br>
-假設我們取k個特徵值，圖片上綠色的區塊，就是被我們捨棄的特徵值，此時的U<em>D</em>V只能稱作約等於矩陣A<br>
-<img src="./PNVKYM7.png" alt></p>
-<p>SVD神奇的地方在於，降低sigma matrix的維度再進行UxDxV的運算，乘出來的結果也不會和A的矩陣相差太遠，仍然可以保留矩陣A的特性。<br>
-藉由這樣的特性，我們可以透過降低sigma的維度，減少運算的計算量(節省記憶體空間)，可以應用在資料壓縮的應用上。</p>
-<p>假設語料庫中有三份文件，文件內容如下:<br>
-Doc1 :  The cat chases the mouse.<br>
-Doc2 :  My cat broke my phone.<br>
-Doc3 :  The cat chases the mouse. My cat broke my phone.Damn!</p>
-<p>經斷詞、頻率分析後，我們可以得到一個3x8的矩陣(以下稱之為矩陣A)<br>
-<img src="./dgTUNyR.png" alt></p>
-<p>再經過SVD(一連串運算)分解成三個矩陣<br>
-<img src="./dMzz7mw.png" alt></p>
-<p>矩陣A(3x8) = U(3x2)* D(2x2) * V(2x8)<br>
-得到SVD分解的結果後，基本上，我們就可以捨棄矩陣A，以UDV代替<br>
-<img src="./PsTtz6i.png" alt></p>
-<p>根據上述的SVD特性:可以減少資料量，檢驗一下這個範例的結果<br>
-原本需要 3<em>8 = 24 資料空間<br>
-k=2，經過SVD轉換後: 3</em>2=6 + 2<em>2=4 + 2</em>8=16 =&gt; 26 資料空間<br>
-k=1，經故SVD轉換後: 3<em>1=3 + 1</em>1=1 + 1*8=8  =&gt; 12 資料空間</p>
-<p>試試看資料量大的情況:</p>
-<p>假設若原本的資料量:100<em>100=10000<br>
-k=2，經SVD分解後: 100</em>2=200 + 2<em>2=4 + 2</em>100=200 =&gt;  444 資料空間<br>
-10000 =&gt; 444 省超多!!!</p>
-<h2><span id="reference">Reference</span></h2>
-<blockquote>
+                <h1><span id="單-雙冒號語法">單、雙冒號語法</span></h1>
+<p>最近學python被單、雙冒號搞得好混亂zzzz<br>
+做一下語法筆記，幫助自己理解</p>
+<h2><span id="i-j-單冒號">[ i : j ] 單冒號</span></h2>
+<p>i 從第幾個index開始讀取<br>
+j 如果是正整數，就是從 i 讀到 j-1；如果是負數，就是從 i 讀到 len -j 的位置<br>
+比如說</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">List = [<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>]</span><br><span class="line">a = List[:<span class="number">-1</span>]</span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="string">i = 0 , j = -1</span></span><br><span class="line"><span class="string">len(List) = 7</span></span><br><span class="line"><span class="string">[:-1]意思就是從index=0開始讀取，讀取到index=len(List)-1 = 7-1= 6 的位置</span></span><br><span class="line"><span class="string">結果: a= [ 0,1,2,3,4,5]</span></span><br><span class="line"><span class="string">"""</span></span><br></pre></td></tr></table></figure>
+<h2><span id="i-j-k-雙冒號">[ i : j : k ] 雙冒號</span></h2>
 <ul>
-<li><a href="https://moreintelligent.wordpress.com/2013/09/15/svd-in-the-context-of-natural-language-processing-tasks/" target="_blank" rel="noopener">SVD in the context of Natural Language Processing Tasks</a></li>
-<li><a href="https://blog.csdn.net/weixin_42398658/article/details/85088130" target="_blank" rel="noopener">NLP — 文本分类（基于SVD的隐语意分析（LSA））</a></li>
-<li><a href="http://littlehaes.com/2018/02/20/SVD%E5%A5%87%E5%BC%82%E5%80%BC%E5%88%86%E8%A7%A3%E6%95%B0%E5%AD%A6%E5%8E%9F%E7%90%86/" target="_blank" rel="noopener">Haes’s blog</a></li>
+<li>i 從第幾個index開始讀</li>
+<li>j 到j-1個index結束</li>
+<li>k 表示讀取的方向，負號就是反向讀取，反之；數字則表示每幾個index讀取一次</li>
 </ul>
-</blockquote>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">b</span> = <span class="selector-tag">a</span>[<span class="selector-tag">i</span>:j:k] =&gt; 表示 <span class="selector-tag">a</span>[i] 複製到 <span class="selector-tag">a</span>[j-<span class="number">1</span>]，以 k 的間距取樣</span><br><span class="line">k 預設為<span class="number">1</span></span><br><span class="line"><span class="selector-tag">i</span> 預設為<span class="number">0</span></span><br><span class="line">j 預設到len(a)</span><br><span class="line"></span><br><span class="line">**若k為負數，list順序會相反</span><br><span class="line"></span><br><span class="line"><span class="selector-tag">a</span>[:] = <span class="selector-tag">a</span>[::] 表示抓取全部資料筆數</span><br></pre></td></tr></table></figure>
+<p>Example:</p>
+<ul>
+<li>[2::-2]</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">sample_list = [<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>]</span><br><span class="line">print(sample_list[:<span class="number">-1</span>]) <span class="comment"># 單冒號</span></span><br><span class="line"><span class="comment"># [0, 1, 2, 3, 4, 5] 倒數第一個不要取，其他都要</span></span><br><span class="line">print(sample_list[<span class="number">2</span>::<span class="number">-2</span>])</span><br><span class="line"><span class="comment"># 從index=2的地方開始讀(就是數字2的位置)</span></span><br><span class="line"><span class="comment"># 因為最後的值是負號，表示反向讀取，每1個index讀一次 ====&gt; 2,1,0</span></span><br><span class="line"><span class="comment"># 如果最後是-2的話，表示每2個index讀一次 ====&gt; 2,0</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>[::-1]      將排列順序倒過來</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">df = pd.read_csv(<span class="string">'http://bit.ly/kaggletrain'</span>)</span><br><span class="line">df = df.drop(<span class="string">"Name"</span>, axis=<span class="number">1</span>)</span><br><span class="line">print(df.head())</span><br><span class="line"><span class="comment"># 透過loc抓取想要的欄位與資料筆數</span></span><br><span class="line">new_df = df.loc[:<span class="number">3</span>,[<span class="string">"PassengerId"</span>,<span class="string">"Sex"</span>,<span class="string">"Age"</span>]]</span><br><span class="line">print(new_df)</span><br><span class="line"></span><br><span class="line">print(new_df[::<span class="number">-1</span>])</span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="string">   PassengerId     Sex   Age</span></span><br><span class="line"><span class="string">0            1    male  22.0</span></span><br><span class="line"><span class="string">1            2  female  38.0</span></span><br><span class="line"><span class="string">2            3  female  26.0</span></span><br><span class="line"><span class="string">3            4  female  35.0</span></span><br><span class="line"><span class="string">             ↓</span></span><br><span class="line"><span class="string">   PassengerId     Sex   Age</span></span><br><span class="line"><span class="string">3            4  female  35.0</span></span><br><span class="line"><span class="string">2            3  female  26.0</span></span><br><span class="line"><span class="string">1            2  female  38.0</span></span><br><span class="line"><span class="string">0            1    male  22.0</span></span><br><span class="line"><span class="string">"""</span></span><br></pre></td></tr></table></figure>
+<h2><span id="沒有冒號">沒有冒號</span></h2>
+<p>純粹數字<br>
+看到負號就是從後面開始數，-1 就代表從後面數來第一個<br>
+=&gt; 抓取倒數(-)第一個(1)element<br>
+例如：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sample_list = [<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>]</span><br><span class="line">print(sample_list[<span class="number">-1</span>])</span><br><span class="line"><span class="comment"># result : 6</span></span><br><span class="line">print(sample_list[<span class="number">-2</span>])</span><br><span class="line"><span class="comment"># result : 5</span></span><br></pre></td></tr></table></figure>
 
 
 
@@ -254,15 +246,10 @@ k=2，經SVD分解後: 100</em>2=200 + 2<em>2=4 + 2</em>100=200 =&gt;  444 資�
                 <!-- Pager -->
                 <ul class="pager">
                     
-                    <li class="previous">
-                        <a href="/2020/04/12/損失函數-loss-cost-function代價函數/" data-toggle="tooltip" data-placement="top"
-                            title="損失函數 (loss/cost function代價函數)">&larr; Previous Post</a>
-                    </li>
-                    
                     
                     <li class="next">
-                        <a href="/2020/04/07/Teacher-forcing/" data-toggle="tooltip" data-placement="top"
-                            title="Teacher forcing">Next Post &rarr;</a>
+                        <a href="/2020/04/13/Backpropagation-反向傳遞/" data-toggle="tooltip" data-placement="top"
+                            title="Backpropagation 反向傳遞">Next Post &rarr;</a>
                     </li>
                     
                 </ul>
@@ -288,7 +275,7 @@ k=2，經SVD分解後: 100</em>2=200 + 2<em>2=4 + 2</em>100=200 =&gt;  444 資�
         <div id="toc" class="toc-article">
         <strong class="toc-title">Contents</strong>
         
-          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">Singular Value Decomposition</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">Reference</span></a></li></ol>
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">單、雙冒號語法</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">[ i : j ] 單冒號</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">[ i : j : k ] 雙冒號</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text">沒有冒號</span></a></li></ol></li></ol>
         
         </div>
       </aside>
@@ -308,8 +295,8 @@ k=2，經SVD分解後: 100</em>2=200 + 2<em>2=4 + 2</em>100=200 =&gt;  444 資�
                     <h5><a href="/tags/">FEATURED TAGS</a></h5>
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#Math"
-                            title="Math">Math</a>
+                        <a class="tag" href="/tags/#Python"
+                            title="Python">Python</a>
                         
                     </div>
                 </section>
